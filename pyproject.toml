@@ -65,7 +65,7 @@ Source = "https://github.com/cmalek/sungazer"
 Issues = "https://github.com/cmalek/botocraft/issues"
 
 [project.scripts]
-botocraft = "botocraft.main:main"
+sungazer = "sungazer.cli.main:cli"
 
 [build-system]
 requires = [
