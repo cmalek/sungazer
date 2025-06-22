@@ -98,7 +98,7 @@ class SungazerClient:
             return model_class()
 
         data = response.json()
-        return model_class.parse_obj(data)  # type: ignore[attr-defined]
+        return model_class(**data)  # type: ignore[attr-defined]
 
     def get(
         self, path: str, model_class: Type[T], params: Dict[str, Any] | None = None
@@ -172,7 +172,7 @@ class SungazerClient:
             return self.post("/dl_cgi/cert/mqtt", Status)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                return CertMQTTFailed.parse_obj(e.response.json())
+                return CertMQTTFailed(**e.response.json())
             raise
 
     # Network operations
@@ -228,7 +228,7 @@ class SungazerClient:
         return self.post(
             "/dl_cgi/network/powerProduction",
             Status,
-            json=power_production.dict(exclude_none=True),
+            json=power_production.model_dump(exclude_none=True),
         )
 
     def begin_checking_cell_primary(self, address: str) -> Status:
@@ -263,7 +263,7 @@ class SungazerClient:
         return self.post(
             f"/dl_cgi/network/interfaceConfig/{network_type}",
             InterfaceConfiguration,
-            json=config.dict(exclude_none=True),
+            json=config.model_dump(exclude_none=True),
         )
 
     def get_interface_config(self, network_type: str) -> InterfaceConfiguration:
@@ -301,11 +301,11 @@ class SungazerClient:
             return self.post(
                 "/dl_cgi/network/firewallSettings",
                 FirewallSettingsConfiguration,
-                json=settings.dict(exclude_none=True),
+                json=settings.model_dump(exclude_none=True),
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to update firewall settings: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -327,7 +327,7 @@ class SungazerClient:
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get firewall settings: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -350,11 +350,11 @@ class SungazerClient:
             return self.post(
                 "/dl_cgi/network/settings",
                 GeneralSettings,
-                json=settings.dict(exclude_none=True),
+                json=settings.model_dump(exclude_none=True),
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to update network settings: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -374,7 +374,7 @@ class SungazerClient:
             return self.get("/dl_cgi/network/settings", GeneralSettings)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get network settings: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -421,7 +421,9 @@ class SungazerClient:
 
         """
         return self.post(
-            "/dl_cgi/network/ping", ResultSucceed, json=options.dict(exclude_none=True)
+            "/dl_cgi/network/ping",
+            ResultSucceed,
+            json=options.model_dump(exclude_none=True),
         )
 
     def tunnel_status(self) -> TunnelStatus:
@@ -439,7 +441,7 @@ class SungazerClient:
             return self.get("/dl_cgi/network/tunnel", TunnelStatus)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get tunnel status: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -460,11 +462,13 @@ class SungazerClient:
         """
         try:
             return self.post(
-                "/dl_cgi/network/tunnel", Status, json=options.dict(exclude_none=True)
+                "/dl_cgi/network/tunnel",
+                Status,
+                json=options.model_dump(exclude_none=True),
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to start tunnel: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -484,7 +488,7 @@ class SungazerClient:
             return self.delete("/dl_cgi/network/tunnel", Status)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to delete tunnel: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -513,7 +517,7 @@ class SungazerClient:
         return self.post(
             "/dl_cgi/network/traceroute",
             ResultSucceed,
-            json=options.dict(exclude_none=True),
+            json=options.model_dump(exclude_none=True),
         )
 
     # Device operations
@@ -571,7 +575,7 @@ class SungazerClient:
             return self.post("/dl_cgi/discovery", DatalessResponse, json=data)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 503:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to start discovery: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -598,7 +602,7 @@ class SungazerClient:
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 503:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Cannot get devices: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -619,11 +623,11 @@ class SungazerClient:
         """
         try:
             return self.post(
-                "/dl_cgi/devices", Result, json=operations.dict(exclude_none=True)
+                "/dl_cgi/devices", Result, json=operations.model_dump(exclude_none=True)
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code in (500, 503):
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to start claim: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -643,7 +647,7 @@ class SungazerClient:
             return self.get("/dl_cgi/devices", Progress)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get claim progress: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -666,7 +670,7 @@ class SungazerClient:
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get interfaces: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -686,7 +690,7 @@ class SungazerClient:
             return self.get("/dl_cgi/communication/wifi/scan", CommunicationAp)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to scan WiFi: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -706,7 +710,7 @@ class SungazerClient:
             return self.get("/dl_cgi/communication/p2p/pairingInfo", P2pPairingInfo)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get P2P pairing info: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -733,7 +737,7 @@ class SungazerClient:
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to pair P2P client: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -754,7 +758,7 @@ class SungazerClient:
             return self.get("/dl_cgi/fw", DataFWResponse)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get firmware info: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -780,7 +784,7 @@ class SungazerClient:
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to start firmware update: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -801,7 +805,7 @@ class SungazerClient:
             return self.get("/dl_cgi/gridprofiles", List[GridProfile])
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get grid profiles: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -821,7 +825,7 @@ class SungazerClient:
             return self.get("/dl_cgi/gridprofiles/status", GridProfileSystemStatus)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get grid profile status: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -846,7 +850,7 @@ class SungazerClient:
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to set grid profile: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -867,7 +871,7 @@ class SungazerClient:
             return self.get("/dl_cgi/pcs/settings", PCSSettings)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get PCS settings: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -888,11 +892,13 @@ class SungazerClient:
         """
         try:
             return self.post(
-                "/dl_cgi/pcs/settings", Status, json=settings.dict(exclude_none=True)
+                "/dl_cgi/pcs/settings",
+                Status,
+                json=settings.model_dump(exclude_none=True),
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to update PCS settings: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -922,7 +928,7 @@ class SungazerClient:
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get system health checklist: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -952,7 +958,7 @@ class SungazerClient:
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to start system health check: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -974,7 +980,7 @@ class SungazerClient:
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get system health check status: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -995,7 +1001,7 @@ class SungazerClient:
             return self.get("/dl_cgi/status/ess", EssStatusReport)
         except httpx.HTTPStatusError as e:
             if e.response.status_code in (404, 500):
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get ESS status: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -1015,7 +1021,7 @@ class SungazerClient:
             return self.get("/dl_cgi/status/equinox", EquinoxSystemStatus)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get Equinox status: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -1036,7 +1042,7 @@ class SungazerClient:
             return self.get("/dl_cgi/whitelist", Whitelist)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get whitelist: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -1057,11 +1063,13 @@ class SungazerClient:
         """
         try:
             return self.post(
-                "/dl_cgi/whitelist", Status, json=whitelist.dict(exclude_none=True)
+                "/dl_cgi/whitelist",
+                Status,
+                json=whitelist.model_dump(exclude_none=True),
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to update whitelist: {failure.status}"
                 raise ValueError(msg) from e
             raise
@@ -1082,7 +1090,7 @@ class SungazerClient:
             return self.get("/dl_cgi/inverters", DiscoveryInverters)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                failure = Failure.parse_obj(e.response.json())
+                failure = Failure(**e.response.json())
                 msg = f"Failed to get inverters: {failure.status}"
                 raise ValueError(msg) from e
             raise
