@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, List
 
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, Field, RootModel, StringConstraints
 from typing_extensions import Annotated
 
 from sungazer.enums import (
@@ -40,10 +40,23 @@ class ValueAndUnit(BaseModel):
     unit: str | None = None
 
 
-class DateDesc(BaseModel):
-    __root__: Annotated[
-        str, StringConstraints(pattern=r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$")
-    ] = Field(..., description="YYYY-MM-DD HH:MM:SS", examples=["2020-02-15 01:23:45"])
+class DateDesc(
+    RootModel[
+        Annotated[
+            str,
+            StringConstraints(pattern=r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$"),
+            Field(
+                ..., description="YYYY-MM-DD HH:MM:SS", examples=["2020-02-15 01:23:45"]
+            ),
+        ]
+    ]
+):
+    """
+    A model to represent a date and time in the format YYYY-MM-DD HH:MM:SS.
+
+    This is used to parse the response from the dl_cgi endpoint.
+    The date and time should be in UTC.
+    """
 
 
 class Progress(BaseModel):
@@ -139,8 +152,11 @@ class ClaimOperation(BaseModel):
     )
 
 
-class ClaimOperationList(BaseModel):
-    __root__: List[ClaimOperation]
+class ClaimOperationList(RootModel[List[ClaimOperation]]):
+    """
+    A model to represent a list of claim operations.
+    This is used to parse the response from the dl_cgi endpoint.
+    """
 
 
 class DeviceDetail(BaseModel):
@@ -217,8 +233,12 @@ class DeviceDetail(BaseModel):
     )
 
 
-class DeviceList(BaseModel):
-    __root__: List[DeviceDetail]
+class DeviceList(RootModel[List[DeviceDetail]]):
+    """
+    A model to represent a list of devices.
+    This is used to parse the response from the dl_cgi endpoint.
+    Each device in the list is represented by DeviceDetail.
+    """
 
 
 class SupervisorInfo(BaseModel):
@@ -534,8 +554,8 @@ class SystemHealthCheckListItem(BaseModel):
     check_list: List[CheckListItem] | None = None
 
 
-class SystemHealthCheckList(BaseModel):
-    __root__: List[SystemHealthCheckListItem]
+class SystemHealthCheckList(RootModel[List[SystemHealthCheckListItem]]):
+    pass
 
 
 class SystemHealthCheckListStatus(BaseModel):
@@ -629,12 +649,12 @@ class PCSSettings(BaseModel):
     enable_pcs: bool | None = None
 
 
-class Inverters(BaseModel):
-    __root__: List[Inverter]
+class Inverters(RootModel[List[Inverter]]):
+    pass
 
 
-class Aps(BaseModel):
-    __root__: List[Ap]
+class Aps(RootModel[List[Ap]]):
+    pass
 
 
 class CommunicationAp(BaseModel):
@@ -657,12 +677,18 @@ class DiscoveryInverters(BaseModel):
     microInverters: MicroInverters | None = None
 
 
-class NetworkInterfaces(BaseModel):
-    __root__: List[NetworkInterface]
+class NetworkInterfaces(RootModel[List[NetworkInterface]]):
+    """
+    A model to represent a list of network interfaces.
+    This is used to parse the response from the dl_cgi endpoint.
+    """
 
 
-class PingableDevices(BaseModel):
-    __root__: List[PingableDevice]
+class PingableDevices(RootModel[List[PingableDevice]]):
+    """
+    A model to represent a list of pingable devices.
+    This is used to parse the response from the dl_cgi endpoint.
+    """
 
 
 class MeterA(BaseModel):
