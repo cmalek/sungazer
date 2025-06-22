@@ -1,4 +1,0 @@
-pydantic>=2.9.0
-click>=8.0
-ipython>=8.36.0
-httpx>=0.28.1
