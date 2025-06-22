@@ -60,7 +60,7 @@ def get_p2p_pairing_info(ctx):
 @click.argument("client_name")
 @click.pass_context
 @handle_exceptions
-def pair_p2p_client(ctx, client_name: str):  # noqa: D417
+def pair_p2p_client(ctx, client_name):
     """
     Pair a P2P client.
 
