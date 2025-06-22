@@ -47,34 +47,18 @@ from .models import (
 T = TypeVar("T")
 
 
-class SungazerClient:
-    """Client for interacting with the Sungazer PVS6 API."""
+class BaseClient:
+    """Base client with common HTTP methods."""
 
-    def __init__(
-        self, base_url: str = "http://sunpowerconsole.com/cgi-bin", timeout: int = 30
-    ):
+    def __init__(self, client: httpx.Client):
         """
-        Initialize the Sungazer client.
+        Initialize with an httpx client.
 
         Args:
-            base_url: The base URL for the API
-            timeout: Request timeout in seconds
+            client: The httpx client to use for requests
 
         """
-        self.base_url = base_url
-        self.client = httpx.Client(base_url=base_url, timeout=timeout)
-
-    def __enter__(self):
-        """Enter the context manager."""
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Exit the context manager and close the client."""
-        self.close()
-
-    def close(self):
-        """Close the client."""
-        self.client.close()
+        self.client = client
 
     def _handle_response(self, response: httpx.Response, model_class: Type[T]) -> T:
         """
@@ -100,7 +84,7 @@ class SungazerClient:
         data = response.json()
         return model_class(**data)  # type: ignore[attr-defined]
 
-    def get(
+    def _get(
         self, path: str, model_class: Type[T], params: Dict[str, Any] | None = None
     ) -> T:
         """
@@ -156,8 +140,11 @@ class SungazerClient:
         response = self.client.delete(path)
         return self._handle_response(response, model_class)
 
-    # Certificate operations
-    def renew_mqtt_cert(self) -> Status | CertMQTTFailed:
+
+class CertificateClient(BaseClient):
+    """Client for certificate operations."""
+
+    def renew_mqtt(self) -> Status | CertMQTTFailed:
         """
         Renew the MQTT certificate.
 
@@ -175,7 +162,10 @@ class SungazerClient:
                 return CertMQTTFailed(**e.response.json())
             raise
 
-    # Network operations
+
+class NetworkClient(BaseClient):
+    """Client for network operations."""
+
     def renew_dhcp_lease(self, network_type: str) -> Status:
         """
         Renew the DHCP lease for the specified network type.
@@ -187,7 +177,7 @@ class SungazerClient:
             Status if successful
 
         """
-        return self.get(f"/dl_cgi/network/interfaceConfig/dhcp/{network_type}", Status)
+        return self._get(f"/dl_cgi/network/interfaceConfig/dhcp/{network_type}", Status)
 
     def release_dhcp_lease(self, network_type: str) -> Status:
         """
@@ -212,7 +202,7 @@ class SungazerClient:
             The power production status
 
         """
-        return self.get("/dl_cgi/network/powerProduction", PowerProductionStatus)
+        return self._get("/dl_cgi/network/powerProduction", PowerProductionStatus)
 
     def set_power_production(self, power_production: PowerProductionSetting) -> Status:
         """
@@ -231,7 +221,7 @@ class SungazerClient:
             json=power_production.model_dump(exclude_none=True),
         )
 
-    def begin_checking_cell_primary(self, address: str) -> Status:
+    def start_cell_primary_check(self, address: str) -> Status:
         """
         Begin checking for permission to set cellular as a primary network interface.
 
@@ -244,6 +234,21 @@ class SungazerClient:
         """
         return self.post(
             "/dl_cgi/network/checkCellPrimary", Status, json={"address": address}
+        )
+
+    def get_interface_config(self, network_type: str) -> InterfaceConfiguration:
+        """
+        Get the interface configuration.
+
+        Args:
+            network_type: The network type (eth, wifi, plc)
+
+        Returns:
+            The interface configuration
+
+        """
+        return self._get(
+            f"/dl_cgi/network/interfaceConfig/{network_type}", InterfaceConfiguration
         )
 
     def update_interface_config(
@@ -266,20 +271,27 @@ class SungazerClient:
             json=config.model_dump(exclude_none=True),
         )
 
-    def get_interface_config(self, network_type: str) -> InterfaceConfiguration:
+    def get_firewall_settings(self) -> FirewallSettingsConfiguration:
         """
-        Get the interface configuration.
-
-        Args:
-            network_type: The network type (eth, wifi, plc)
+        Get the firewall settings.
 
         Returns:
-            The interface configuration
+            The firewall settings
+
+        Raises:
+            ValueError: If the operation fails
 
         """
-        return self.get(
-            f"/dl_cgi/network/interfaceConfig/{network_type}", InterfaceConfiguration
-        )
+        try:
+            return self._get(
+                "/dl_cgi/network/firewallSettings", FirewallSettingsConfiguration
+            )
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 500:
+                failure = Failure(**e.response.json())
+                msg = f"Failed to get firewall settings: {failure.status}"
+                raise ValueError(msg) from e
+            raise
 
     def update_firewall_settings(
         self, settings: FirewallSettingsConfiguration
@@ -310,25 +322,23 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def get_firewall_settings(self) -> FirewallSettingsConfiguration:
+    def get_network_settings(self) -> GeneralSettings:
         """
-        Get the firewall settings.
+        Get the network settings.
 
         Returns:
-            The firewall settings
+            The network settings
 
         Raises:
             ValueError: If the operation fails
 
         """
         try:
-            return self.get(
-                "/dl_cgi/network/firewallSettings", FirewallSettingsConfiguration
-            )
+            return self._get("/dl_cgi/network/settings", GeneralSettings)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
-                msg = f"Failed to get firewall settings: {failure.status}"
+                msg = f"Failed to get network settings: {failure.status}"
                 raise ValueError(msg) from e
             raise
 
@@ -359,27 +369,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def get_network_settings(self) -> GeneralSettings:
-        """
-        Get the network settings.
-
-        Returns:
-            The network settings
-
-        Raises:
-            ValueError: If the operation fails
-
-        """
-        try:
-            return self.get("/dl_cgi/network/settings", GeneralSettings)
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code == 500:
-                failure = Failure(**e.response.json())
-                msg = f"Failed to get network settings: {failure.status}"
-                raise ValueError(msg) from e
-            raise
-
-    def get_network_interfaces(self) -> NetworkInterfaces:
+    def get_interfaces(self) -> NetworkInterfaces:
         """
         Get the list of network interfaces.
 
@@ -387,7 +377,7 @@ class SungazerClient:
             The list of network interfaces
 
         """
-        return self.get("/dl_cgi/network/interfaces", NetworkInterfaces)
+        return self._get("/dl_cgi/network/interfaces", NetworkInterfaces)
 
     def get_pingable_devices(self) -> PingableDevices:
         """
@@ -397,9 +387,13 @@ class SungazerClient:
             The list of pingable devices
 
         """
-        return self.get("/dl_cgi/network/getPingableDevices", PingableDevices)
+        return self._get("/dl_cgi/network/getPingableDevices", PingableDevices)
 
-    def ping_status(self) -> PingData:
+
+class PingClient(BaseClient):
+    """Client for ping operations."""
+
+    def get_status(self) -> PingData:
         """
         Get the status of the ping.
 
@@ -407,9 +401,9 @@ class SungazerClient:
             The ping status
 
         """
-        return self.get("/dl_cgi/network/ping", PingData)
+        return self._get("/dl_cgi/network/ping", PingData)
 
-    def start_ping(self, options: PingOptions) -> ResultSucceed:
+    def start(self, options: PingOptions) -> ResultSucceed:
         """
         Start a ping.
 
@@ -426,7 +420,11 @@ class SungazerClient:
             json=options.model_dump(exclude_none=True),
         )
 
-    def tunnel_status(self) -> TunnelStatus:
+
+class TunnelClient(BaseClient):
+    """Client for tunnel operations."""
+
+    def get_status(self) -> TunnelStatus:
         """
         Get the status of the ssh tunnel.
 
@@ -438,7 +436,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/network/tunnel", TunnelStatus)
+            return self._get("/dl_cgi/network/tunnel", TunnelStatus)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
@@ -446,7 +444,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def start_tunnel(self, options: TunnelOptions) -> Status:
+    def start(self, options: TunnelOptions) -> Status:
         """
         Start a ssh tunnel.
 
@@ -473,7 +471,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def delete_tunnel(self) -> Status:
+    def delete_all(self) -> Status:
         """
         Delete all ssh tunnels.
 
@@ -493,7 +491,11 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def traceroute_status(self) -> TraceRouteObject:
+
+class TracerouteClient(BaseClient):
+    """Client for traceroute operations."""
+
+    def get_status(self) -> TraceRouteObject:
         """
         Get the status of the traceroute.
 
@@ -501,9 +503,9 @@ class SungazerClient:
             The traceroute status
 
         """
-        return self.get("/dl_cgi/network/traceroute", TraceRouteObject)
+        return self._get("/dl_cgi/network/traceroute", TraceRouteObject)
 
-    def start_traceroute(self, options: TracerouteOptions) -> ResultSucceed:
+    def start(self, options: TracerouteOptions) -> ResultSucceed:
         """
         Start a traceroute.
 
@@ -520,7 +522,10 @@ class SungazerClient:
             json=options.model_dump(exclude_none=True),
         )
 
-    # Device operations
+
+class DeviceClient(BaseClient):
+    """Client for device operations."""
+
     def get_discovery_progress(self) -> DiscoverProgressList:
         """
         Get the discovery progress.
@@ -529,9 +534,9 @@ class SungazerClient:
             The discovery progress
 
         """
-        return self.get("/dl_cgi/discovery", DiscoverProgressList)
+        return self._get("/dl_cgi/discovery", DiscoverProgressList)
 
-    def discover(
+    def start_discovery(
         self,
         num_devices: int = 200,
         mi_type: str = "ALL",
@@ -546,7 +551,7 @@ class SungazerClient:
         Args:
             num_devices: The number of devices to discover
             mi_type: The MI type (ALL, ENPH, SBT)
-            device: The device type (allnomi, all, Metstation, i
+            device: The device type (allnomi, all, Metstation,
                 allplusmime, allnoinverters, storage)
             interfaces: The interfaces to use (mime, net, ttyUSB0,
                 ttyUSB1, ttyUSB2, local)
@@ -580,7 +585,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def get_devices(self, detailed: bool = False) -> DeviceList:
+    def get_list(self, detailed: bool = False) -> DeviceList:
         """
         Get the device list.
 
@@ -595,7 +600,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get(
+            return self._get(
                 "/dl_cgi/devices/list",
                 DeviceList,
                 params={"detailed": str(detailed).lower()},
@@ -632,7 +637,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def get_claim(self) -> Progress:
+    def get_claim_progress(self) -> Progress:
         """
         Get the claim progress.
 
@@ -644,7 +649,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/devices", Progress)
+            return self._get("/dl_cgi/devices", Progress)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
@@ -652,7 +657,10 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    # Communication operations
+
+class CommunicationClient(BaseClient):
+    """Client for communication operations."""
+
     def get_interfaces(self) -> CommunicationsInterfaces:
         """
         Get all information for all communications interfaces.
@@ -665,7 +673,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get(
+            return self._get(
                 "/dl_cgi/communication/interfaces", CommunicationsInterfaces
             )
         except httpx.HTTPStatusError as e:
@@ -687,7 +695,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/communication/wifi/scan", CommunicationAp)
+            return self._get("/dl_cgi/communication/wifi/scan", CommunicationAp)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
@@ -707,7 +715,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/communication/p2p/pairingInfo", P2pPairingInfo)
+            return self._get("/dl_cgi/communication/p2p/pairingInfo", P2pPairingInfo)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
@@ -742,8 +750,11 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    # Firmware operations
-    def get_firmware_info(self) -> DataFWResponse:
+
+class FirmwareClient(BaseClient):
+    """Client for firmware operations."""
+
+    def get_info(self) -> DataFWResponse:
         """
         Get firmware information.
 
@@ -755,7 +766,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/fw", DataFWResponse)
+            return self._get("/dl_cgi/fw", DataFWResponse)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
@@ -763,7 +774,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def start_firmware_update(self, url: str, version: str) -> DatalessResponse:
+    def start_update(self, url: str, version: str) -> DatalessResponse:
         """
         Start a firmware update.
 
@@ -789,8 +800,11 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    # Grid profile operations
-    def get_grid_profiles(self) -> List[GridProfile]:
+
+class GridProfileClient(BaseClient):
+    """Client for grid profile operations."""
+
+    def get_list(self) -> List[GridProfile]:
         """
         Get the list of grid profiles.
 
@@ -802,7 +816,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/gridprofiles", List[GridProfile])
+            return self._get("/dl_cgi/gridprofiles", List[GridProfile])
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
@@ -810,7 +824,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def get_grid_profile_status(self) -> GridProfileSystemStatus:
+    def get_status(self) -> GridProfileSystemStatus:
         """
         Get the grid profile status.
 
@@ -822,7 +836,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/gridprofiles/status", GridProfileSystemStatus)
+            return self._get("/dl_cgi/gridprofiles/status", GridProfileSystemStatus)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
@@ -830,7 +844,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def set_grid_profile(self, grid_profile_id: str) -> DatalessResponse:
+    def set_profile(self, grid_profile_id: str) -> DatalessResponse:
         """
         Set the grid profile.
 
@@ -855,8 +869,11 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    # PCS operations
-    def get_pcs_settings(self) -> PCSSettings:
+
+class PcsClient(BaseClient):
+    """Client for PCS operations."""
+
+    def get_settings(self) -> PCSSettings:
         """
         Get the PCS settings.
 
@@ -868,7 +885,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/pcs/settings", PCSSettings)
+            return self._get("/dl_cgi/pcs/settings", PCSSettings)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
@@ -876,7 +893,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def update_pcs_settings(self, settings: PCSSettings) -> Status:
+    def update_settings(self, settings: PCSSettings) -> Status:
         """
         Update the PCS settings.
 
@@ -903,10 +920,11 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    # System health operations
-    def get_system_health_checklist(
-        self, category: str = "ALL"
-    ) -> SystemHealthCheckList:
+
+class SystemHealthClient(BaseClient):
+    """Client for system health operations."""
+
+    def get_checklist(self, category: str = "ALL") -> SystemHealthCheckList:
         """
         Get the system health checklist.
 
@@ -921,7 +939,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get(
+            return self._get(
                 "/dl_cgi/system/health/checklist",
                 SystemHealthCheckList,
                 params={"category": category},
@@ -933,9 +951,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def start_system_health_check(
-        self, checks: List[str], category: str = "ALL"
-    ) -> DatalessResponse:
+    def start_check(self, checks: List[str], category: str = "ALL") -> DatalessResponse:
         """
         Start a system health check.
 
@@ -963,7 +979,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def get_system_health_check_status(self) -> List[SystemHealthCheckListStatus]:
+    def get_check_status(self) -> List[SystemHealthCheckListStatus]:
         """
         Get the system health check status.
 
@@ -975,7 +991,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get(
+            return self._get(
                 "/dl_cgi/system/health/status", List[SystemHealthCheckListStatus]
             )
         except httpx.HTTPStatusError as e:
@@ -985,8 +1001,11 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    # Status operations
-    def get_ess_status(self) -> EssStatusReport:
+
+class StatusClient(BaseClient):
+    """Client for status operations."""
+
+    def get_ess(self) -> EssStatusReport:
         """
         Get the energy storage system status.
 
@@ -998,7 +1017,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/status/ess", EssStatusReport)
+            return self._get("/dl_cgi/status/ess", EssStatusReport)
         except httpx.HTTPStatusError as e:
             if e.response.status_code in (404, 500):
                 failure = Failure(**e.response.json())
@@ -1006,7 +1025,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def get_equinox_status(self) -> EquinoxSystemStatus:
+    def get_equinox(self) -> EquinoxSystemStatus:
         """
         Get the Equinox system status.
 
@@ -1018,7 +1037,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/status/equinox", EquinoxSystemStatus)
+            return self._get("/dl_cgi/status/equinox", EquinoxSystemStatus)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
@@ -1026,8 +1045,11 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    # Whitelist operations
-    def get_whitelist(self) -> Whitelist:
+
+class WhitelistClient(BaseClient):
+    """Client for whitelist operations."""
+
+    def get(self) -> Whitelist:
         """
         Get the whitelist.
 
@@ -1039,7 +1061,7 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/whitelist", Whitelist)
+            return self._get("/dl_cgi/whitelist", Whitelist)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
@@ -1047,7 +1069,7 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    def update_whitelist(self, whitelist: Whitelist) -> Status:
+    def update(self, whitelist: Whitelist) -> Status:
         """
         Update the whitelist.
 
@@ -1074,8 +1096,11 @@ class SungazerClient:
                 raise ValueError(msg) from e
             raise
 
-    # Inverter operations
-    def get_inverters(self) -> DiscoveryInverters:
+
+class InverterClient(BaseClient):
+    """Client for inverter operations."""
+
+    def get_list(self) -> DiscoveryInverters:
         """
         Get the inverters.
 
@@ -1087,10 +1112,79 @@ class SungazerClient:
 
         """
         try:
-            return self.get("/dl_cgi/inverters", DiscoveryInverters)
+            return self._get("/dl_cgi/inverters", DiscoveryInverters)
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 failure = Failure(**e.response.json())
                 msg = f"Failed to get inverters: {failure.status}"
                 raise ValueError(msg) from e
             raise
+
+
+class SungazerClient:
+    """Client for interacting with the Sungazer PVS6 API."""
+
+    def __init__(
+        self, base_url: str = "http://sunpowerconsole.com/cgi-bin", timeout: int = 30
+    ):
+        """
+        Initialize the Sungazer client.
+
+        Args:
+            base_url: The base URL for the API
+            timeout: Request timeout in seconds
+
+        """
+        self.base_url = base_url
+        self.client = httpx.Client(base_url=base_url, timeout=timeout)
+
+        # Initialize specialized clients
+        self.certificates = CertificateClient(self.client)
+        self.network = NetworkClient(self.client)
+        self.ping = PingClient(self.client)
+        self.tunnel = TunnelClient(self.client)
+        self.traceroute = TracerouteClient(self.client)
+        self.devices = DeviceClient(self.client)
+        self.communication = CommunicationClient(self.client)
+        self.firmware = FirmwareClient(self.client)
+        self.grid_profiles = GridProfileClient(self.client)
+        self.pcs = PcsClient(self.client)
+        self.system_health = SystemHealthClient(self.client)
+        self.status = StatusClient(self.client)
+        self.whitelist = WhitelistClient(self.client)
+        self.inverters = InverterClient(self.client)
+
+    def __enter__(self):
+        """Enter the context manager."""
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Exit the context manager and close the client."""
+        self.close()
+
+    def close(self):
+        """Close the client."""
+        self.client.close()
+
+    # Legacy methods that delegate to the specialized clients
+    # These can be removed if not needed for backward compatibility
+
+    def renew_mqtt_cert(self) -> Status | CertMQTTFailed:
+        """Legacy method that delegates to certificates.renew_mqtt."""
+        return self.certificates.renew_mqtt()
+
+    def renew_dhcp_lease(self, network_type: str) -> Status:
+        """Legacy method that delegates to network.renew_dhcp_lease."""
+        return self.network.renew_dhcp_lease(network_type)
+
+    def release_dhcp_lease(self, network_type: str) -> Status:
+        """Legacy method that delegates to network.release_dhcp_lease."""
+        return self.network.release_dhcp_lease(network_type)
+
+    def get_power_production(self) -> PowerProductionStatus:
+        """Legacy method that delegates to network.get_power_production."""
+        return self.network.get_power_production()
+
+    def set_power_production(self, power_production: PowerProductionSetting) -> Status:
+        """Legacy method that delegates to network.set_power_production."""
+        return self.network.set_power_production(power_production)
