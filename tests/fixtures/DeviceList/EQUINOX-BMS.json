@@ -1,0 +1,19 @@
+{
+    "ISDETAIL": true,
+    "SERIAL":   "BC123400678933751040",
+    "TYPE": "EQUINOX-BMS",
+    "STATE":    "error",
+    "STATEDESCR":   "Error",
+    "MODEL":    "SchneiderElectric-SP1",
+    "DESCR":    "ESS BMS BC01234567890ABCDEF",
+    "DEVICE_TYPE":  "ESS BMS",
+    "interface":    "sunspec",
+    "mac_address":  "d8:a9:ab:cd:12:34",
+    "parent":   11,
+    "slave":    230,
+    "PORT": "P0, SunSpec, Slave 230",
+    "origin":   "data_logger",
+    "OPERATION":    "noop",
+    "PARENT":   "00001ABC1234_01234567890ABCDEF",
+    "CURTIME":  "2022,05,26,14,50,33"
+}

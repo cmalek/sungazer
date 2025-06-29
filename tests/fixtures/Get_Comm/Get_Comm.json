@@ -1,0 +1,51 @@
+{
+    "result":   "succeed",
+    "networkstatus":    {
+        "interfaces":   [{
+                "interface":    "wan",
+                "internet": "down",
+                "ipaddr":   "",
+                "link": "disconnected",
+                "mode": "wan",
+                "sms":  "unreachable",
+                "state":    "down"
+            }, {
+                "interface":    "plc",
+                "internet": "down",
+                "ipaddr":   "",
+                "link": "disconnected",
+                "pairing":  "unpaired",
+                "sms":  "unreachable",
+                "speed":    0,
+                "state":    "down"
+            }, {
+                "interface":    "sta0",
+                "internet": "up",
+                "ipaddr":   "192.168.10.239",
+                "signal":   "-48",
+                "sms":  "reachable",
+                "ssid": "Starfield",
+                "status":   "connected"
+            }, {
+                "interface":    "cell",
+                "internet": "down",
+                "ipaddr":   "",
+                "is_alwayson":  false,
+                "is_primary":   false,
+                "link": "connected",
+                "modem":    "MODEM_OK",
+                "provider": "UNKNOWN",
+                "signal":   0,
+                "sim":  "SIM_READY",
+                "sms":  "unreachable",
+                "state":    "DOWN",
+                "status":   "NOT_REGISTERED"
+            }],
+        "system":   {
+            "interface":    "sta0",
+            "internet": "up",
+            "sms":  "reachable"
+        },
+        "ts":   "1635315583"
+    }
+}

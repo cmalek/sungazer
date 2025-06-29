@@ -1,0 +1,17 @@
+{
+    "ISDETAIL": true,
+    "SERIAL":   "00001ABC1234_01234567890ABCDEF",
+    "TYPE": "EQUINOX-ESS",
+    "STATE":    "error",
+    "STATEDESCR":   "Error",
+    "MODEL":    "SPWR-Equinox-model",
+    "DESCR":    "Energy Storage System 00001ABC1234_01234567890ABCDEF",
+    "DEVICE_TYPE":  "Energy Storage System",
+    "hw_version":   "0",
+    "interface":    "none",
+    "SWVER":    "0",
+    "PORT": "P0, Parent, Slave -1",
+    "origin":   "data_logger",
+    "OPERATION":    "noop",
+    "CURTIME":  "2022,05,26,14,50,35"
+}

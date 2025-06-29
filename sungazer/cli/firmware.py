@@ -1,44 +1,41 @@
+"""Firmware management commands for Sungazer PVS6 API."""
+
 import click
 
 from sungazer.cli.main import handle_exceptions, output_formatter
 
 
-@click.group(name="firmware")
+@click.group(help="Firmware management commands.")
 def firmware():
-    """Firmware operations."""
+    """
+    Firmware management commands.
+
+    These commands allow you to check firmware status and manage firmware
+    updates for the Sungazer PVS6 device and connected components.
+    """
 
 
-@firmware.command(name="get-info")
+@firmware.command(name="check", help="Check if new firmware is available.")
 @click.pass_context
 @handle_exceptions
-def get_info(ctx):
+def check_firmware(ctx):
     """
-    Get firmware information.
+    Check if new firmware is available for the Sungazer PVS6 device.
 
-    Example:
-        $ sungazer firmware get-info
+    This command queries the device to determine if firmware updates are
+    available. It checks both the main device firmware and firmware for
+    connected components.
+
+    Returns:
+        Firmware information including:
+        - Current firmware version
+        - Available firmware updates
+        - Download URLs for updates (if available)
+        - Update status and compatibility information
 
     """
     client = ctx.obj["client"]
-    result = client.firmware.get_info()
-    output_formatter(result.model_dump(), ctx.obj["output_format"])
+    output_format = ctx.obj["output_format"]
 
-
-@firmware.command(name="start-update")
-@click.option("--url", required=True, help="URL to download the firmware from")
-@click.option("--version", required=True, help="Version of the firmware")
-@click.pass_context
-@handle_exceptions
-def start_update(ctx, url, version):
-    """
-    Start a firmware update.
-
-    Example:
-        $ sungazer firmware start-update \
-            --url https://example.com/firmware.bin \
-            --version 1.2.3
-
-    """
-    client = ctx.obj["client"]
-    result = client.firmware.start_update(url, version)
-    output_formatter(result.model_dump(), ctx.obj["output_format"])
+    result = client.firmware.check()
+    output_formatter(result.model_dump(), output_format)

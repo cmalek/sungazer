@@ -1,60 +1,69 @@
+"""Grid profile management commands for Sungazer PVS6 API."""
+
 import click
 
 from sungazer.cli.main import handle_exceptions, output_formatter
 
 
-@click.group(name="grid-profile")
+@click.group(help="Grid profile management commands.")
 def grid_profile():
-    """Grid profile operations."""
+    """
+    Grid profile management commands.
+
+    These commands allow you to view and manage grid profiles on the Sungazer
+    PVS6 system. Grid profiles define how the solar system interacts with the
+    utility grid and ensure compliance with local regulations.
+    """
 
 
-@grid_profile.command(name="get-list")
+@grid_profile.command(help="Get the current grid profile configuration.")
 @click.pass_context
 @handle_exceptions
-def get_list(ctx):
+def get(ctx):
     """
-    Get the list of grid profiles.
+    Get the current grid profile configuration.
 
-    Example:
-        $ sungazer grid-profile get-list
+    This command retrieves information about the currently active grid profile
+    and any pending profile changes. Grid profiles define compliance parameters
+    for utility grid interaction.
+
+    Returns:
+        Grid profile information including:
+        - Currently active profile name and ID
+        - Pending profile changes (if any)
+        - Profile completion percentage
+        - Support status across system components
+        - Overall profile operation status
 
     """
     client = ctx.obj["client"]
-    result = client.grid_profiles.get_list()
-    output_formatter([p.model_dump() for p in result], ctx.obj["output_format"])
+    output_format = ctx.obj["output_format"]
+
+    result = client.grid_profiles.get()
+    output_formatter(result.model_dump(), output_format)
 
 
-@grid_profile.command(name="get-status")
+@grid_profile.command(help="Refresh the list of available grid profiles.")
 @click.pass_context
 @handle_exceptions
-def get_status(ctx):
+def refresh(ctx):
     """
-    Get the grid profile status.
+    Refresh the list of available grid profiles.
 
-    Example:
-        $ sungazer grid-profile get-status
+    This command updates the list of available grid profiles from the Sungazer
+    system. It may download new profiles or update existing ones based on
+    current compliance requirements.
+
+    Returns:
+        Grid profile refresh information including:
+        - Refresh operation result status
+        - Updated profile list with metadata
+        - Profile creation/update timestamps
+        - Available profiles with compliance details
 
     """
     client = ctx.obj["client"]
-    result = client.grid_profiles.get_status()
-    output_formatter(result.model_dump(), ctx.obj["output_format"])
+    output_format = ctx.obj["output_format"]
 
-
-@grid_profile.command(name="set-profile")
-@click.argument("grid-profile-id")
-@click.pass_context
-@handle_exceptions
-def set_profile(ctx, grid_profile_id: str):  # noqa: D417
-    """
-    Set the grid profile.
-
-    Args:
-        GRID_PROFILE_ID: The grid profile ID
-
-    Example:
-        $ sungazer grid-profile set-profile 123
-
-    """
-    client = ctx.obj["client"]
-    result = client.grid_profiles.set_profile(grid_profile_id)
-    output_formatter(result.model_dump(), ctx.obj["output_format"])
+    result = client.grid_profiles.refresh()
+    output_formatter(result.model_dump(), output_format)

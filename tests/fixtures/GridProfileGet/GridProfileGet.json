@@ -1,0 +1,10 @@
+{
+    "result":   "succeed",
+    "active_name":  "IEEE-1547a-2014 + 2020 CA Rule21",
+    "active_id":    "816bf3302d337a42680b996227ddbc46abf9cd05",
+    "pending_name": "IEEE-1547a-2014 + 2020 CA Rule21",
+    "pending_id":   "816bf3302d337a42680b996227ddbc46abf9cd05",
+    "percent":  100,
+    "supported_by": "ALL",
+    "status":   "success"
+}

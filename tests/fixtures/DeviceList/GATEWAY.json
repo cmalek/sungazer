@@ -1,0 +1,18 @@
+{
+    "ISDETAIL": true,
+    "SERIAL":   "BC1234006789",
+    "TYPE": "GATEWAY",
+    "STATE":    "error",
+    "STATEDESCR":   "Error",
+    "MODEL":    "SchneiderElectric-ConextGateway",
+    "DESCR":    "Gateway BC1234006789",
+    "DEVICE_TYPE":  "Gateway",
+    "interface":    "sunspec",
+    "mac_address":  "d8:a9:ab:cd:12:34",
+    "slave":    1,
+    "SWVER":    "V1",
+    "PORT": "P0, SunSpec, Slave 1",
+    "origin":   "data_logger",
+    "OPERATION":    "noop",
+    "CURTIME":  "2022,05,26,14,50,33"
+}

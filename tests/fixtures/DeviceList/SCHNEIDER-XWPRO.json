@@ -1,0 +1,20 @@
+{
+    "ISDETAIL": true,
+    "SERIAL":   "00001ABC1234",
+    "TYPE": "SCHNEIDER-XWPRO",
+    "STATE":    "error",
+    "STATEDESCR":   "Error",
+    "MODEL":    "SchneiderElectric-XW6848-21",
+    "DESCR":    "Storage Inverter 00001ABC1234",
+    "DEVICE_TYPE":  "Storage Inverter",
+    "interface":    "sunspec",
+    "mac_address":  "d8:a9:ab:cd:12:34",
+    "parent":   11,
+    "slave":    10,
+    "SWVER":    "V1",
+    "PORT": "P0, SunSpec, Slave 10",
+    "origin":   "data_logger",
+    "OPERATION":    "noop",
+    "PARENT":   "00001ABC1234_01234567890ABCDEF",
+    "CURTIME":  "2022,05,26,14,50,33"
+}

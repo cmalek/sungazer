@@ -1,0 +1,19 @@
+{
+    "ISDETAIL": true,
+    "SERIAL":   "M00122109A0355",
+    "TYPE": "BATTERY",
+    "STATE":    "error",
+    "STATEDESCR":   "Error",
+    "MODEL":    "POWERAMP-Komodo 1.2",
+    "DESCR":    "Battery M00122109A0355",
+    "DEVICE_TYPE":  "Battery",
+    "hw_version":   "4.34",
+    "interface":    "none",
+    "parent":   11,
+    "SWVER":    "2.8",
+    "PORT": "P0, None, Slave -1",
+    "origin":   "data_logger",
+    "OPERATION":    "noop",
+    "PARENT":   "00001ABC1234_01234567890ABCDEF",
+    "CURTIME":  "2022,05,26,14,50,34"
+}

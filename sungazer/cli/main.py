@@ -183,36 +183,18 @@ def cli(ctx, base_url, timeout, output):
 
 
 # Import all subcommands
-from sungazer.cli.certificate import certificate
-from sungazer.cli.communication import communication
 from sungazer.cli.device import device
 from sungazer.cli.firmware import firmware
 from sungazer.cli.grid_profile import grid_profile
-from sungazer.cli.inverter import inverter
 from sungazer.cli.network import network
-from sungazer.cli.pcs import pcs
-from sungazer.cli.ping import ping
-from sungazer.cli.status import status
-from sungazer.cli.system_health import system_health
-from sungazer.cli.traceroute import traceroute
-from sungazer.cli.tunnel import tunnel
-from sungazer.cli.whitelist import whitelist
+from sungazer.cli.session import session
 
 # Register all subcommands
-cli.add_command(certificate)
+cli.add_command(session)
 cli.add_command(network)
-cli.add_command(ping)
-cli.add_command(tunnel)
-cli.add_command(traceroute)
 cli.add_command(device)
-cli.add_command(communication)
 cli.add_command(firmware)
 cli.add_command(grid_profile)
-cli.add_command(pcs)
-cli.add_command(system_health)
-cli.add_command(status)
-cli.add_command(whitelist)
-cli.add_command(inverter)
 
 if __name__ == "__main__":
     cli()

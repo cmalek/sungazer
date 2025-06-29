@@ -16,10 +16,3 @@ These models may be used as types for the fields in other models on this page.
    :show-inheritance:
    :inherited-members:
    :exclude-members: update_forward_refs, model_extra, model_fields_set, validate, schema_json, model_rebuild, model_post_init, model_parametrized_name, model_json_schema, copy, from_orm, dict, json, schema, schema_json
-
-Enums
------
-
-These models are used to represent the enums in the SunPower PVS6 API.
-
-.. automodule:: sungazer.enums
