@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest  # noqa: F401
 
-from sungazer.models import GetCommResponse, Interface, System
+from sungazer.models.network import GetCommResponse, Interface, NetworkStatus, System
 
 
 def test_get_comm_response_from_json():
@@ -15,22 +15,24 @@ def test_get_comm_response_from_json():
         test_data = json.load(f)
 
     # Parse the response
-    response = GetCommResponse(**test_data["networkstatus"])
+    response = GetCommResponse(**test_data)  # type: ignore[arg-type]
 
     # Verify the response was parsed correctly
     assert isinstance(response, GetCommResponse)
-    assert response.ts == "1635315583"
-    assert response.interfaces is not None
-    assert len(response.interfaces) == 4
-    assert response.system is not None
+    assert response.result == "succeed"
+    assert response.networkstatus is not None
+    assert response.networkstatus.ts == "1635315583"
+    assert response.networkstatus.interfaces is not None
+    assert len(response.networkstatus.interfaces) == 4
+    assert response.networkstatus.system is not None
 
     # Verify system information
-    assert response.system.interface == "sta0"
-    assert response.system.internet == "up"
-    assert response.system.sms == "reachable"
+    assert response.networkstatus.system.interface == "sta0"
+    assert response.networkstatus.system.internet == "up"
+    assert response.networkstatus.system.sms == "reachable"
 
     # Verify interfaces
-    interfaces = response.interfaces
+    interfaces = response.networkstatus.interfaces
     assert len(interfaces) == 4
 
     # Test wan interface
@@ -75,6 +77,72 @@ def test_get_comm_response_from_json():
     assert cell_interface.status == "NOT_REGISTERED"
 
 
+def test_get_comm_response_with_minimal_data():
+    """Test GetCommResponse with minimal data."""
+    minimal_data = {
+        "result": "success",
+        "networkstatus": {
+            "ts": "1234567890",
+        },
+    }
+    response = GetCommResponse(**minimal_data)  # type: ignore[arg-type]
+    assert response.result == "success"
+    assert response.networkstatus is not None
+    assert response.networkstatus.ts == "1234567890"
+    assert response.networkstatus.interfaces is None
+    assert response.networkstatus.system is None
+
+    # Test with empty interfaces and system
+    empty_data = {
+        "result": "success",
+        "networkstatus": {
+            "interfaces": [],
+            "system": None,
+            "ts": "1234567890",
+        },
+    }
+    response_empty = GetCommResponse(**empty_data)  # type: ignore[arg-type]
+    assert response_empty.result == "success"
+    assert response_empty.networkstatus is not None
+    assert response_empty.networkstatus.ts == "1234567890"
+    assert response_empty.networkstatus.interfaces == []
+    assert response_empty.networkstatus.system is None
+
+
+def test_get_comm_response_missing_required_fields():
+    """Test GetCommResponse with missing required fields."""
+    # Test missing result field
+    data_without_result = {
+        "networkstatus": {
+            "ts": "1234567890",
+        }
+    }
+    with pytest.raises(ValueError) as exc_info:  # noqa: PT011
+        GetCommResponse(**data_without_result)  # type: ignore[arg-type]
+    assert "result" in str(exc_info.value)
+
+    # Test missing networkstatus field
+    data_without_networkstatus = {"result": "success"}
+    with pytest.raises(ValueError) as exc_info:  # noqa: PT011
+        GetCommResponse(**data_without_networkstatus)  # type: ignore[arg-type]
+    assert "networkstatus" in str(exc_info.value)
+
+
+def test_get_comm_response_with_different_result_values():
+    """Test GetCommResponse with different result values."""
+    networkstatus_data = {
+        "ts": "1234567890",
+    }
+    test_cases = ["success", "succeed", "failed", "error"]
+
+    for result in test_cases:
+        data = {"result": result, "networkstatus": networkstatus_data}
+        response = GetCommResponse(**data)  # type: ignore[arg-type]
+        assert response.result == result
+        assert response.networkstatus is not None
+        assert response.networkstatus.ts == "1234567890"
+
+
 def test_interface_model_parsing():
     """Test Interface model parsing with various field combinations."""
     # Test WiFi interface
@@ -86,7 +154,7 @@ def test_interface_model_parsing():
         "status": "connected",
         "sms": "reachable",
     }
-    wifi_interface = Interface(**wifi_data)
+    wifi_interface = Interface(**wifi_data)  # type: ignore[arg-type]
     assert wifi_interface.interface == "sta0"
     assert wifi_interface.internet == "up"
     assert str(wifi_interface.ipaddr) == "192.168.1.100"
@@ -109,7 +177,7 @@ def test_interface_model_parsing():
         "status": "NOT_REGISTERED",
         "sms": "unreachable",
     }
-    cell_interface = Interface(**cell_data)
+    cell_interface = Interface(**cell_data)  # type: ignore[arg-type]
     assert cell_interface.interface == "cell"
     assert cell_interface.internet == "down"
     assert cell_interface.ipaddr is None  # Empty string becomes None
@@ -133,7 +201,7 @@ def test_interface_model_parsing():
         "state": "up",
         "sms": "reachable",
     }
-    eth_interface = Interface(**eth_data)
+    eth_interface = Interface(**eth_data)  # type: ignore[arg-type]
     assert eth_interface.interface == "wan"
     assert eth_interface.internet == "up"
     assert str(eth_interface.ipaddr) == "10.0.0.5"
@@ -150,7 +218,7 @@ def test_system_model_parsing():
         "internet": "up",
         "sms": "reachable",
     }
-    system = System(**system_data)
+    system = System(**system_data)  # type: ignore[arg-type]
     assert system.interface == "sta0"
     assert system.internet == "up"
     assert system.sms == "reachable"
@@ -161,52 +229,75 @@ def test_system_model_parsing():
         "internet": None,
         "sms": None,
     }
-    system_none = System(**system_none_data)
+    system_none = System(**system_none_data)  # type: ignore[arg-type]
     assert system_none.interface is None
     assert system_none.internet is None
     assert system_none.sms is None
 
 
-def test_get_comm_response_empty():
-    """Test GetCommResponse with minimal data."""
+def test_networkstatus_model_parsing():
+    """Test NetworkStatus model parsing."""
+    networkstatus_data = {
+        "ts": "1234567890",
+        "interfaces": [
+            {
+                "interface": "sta0",
+                "internet": "up",
+                "ipaddr": "192.168.1.100",
+            }
+        ],
+        "system": {
+            "interface": "sta0",
+            "internet": "up",
+            "sms": "reachable",
+        },
+    }
+    networkstatus = NetworkStatus(**networkstatus_data)  # type: ignore[arg-type]
+    assert networkstatus.ts == "1234567890"
+    assert networkstatus.interfaces is not None
+    assert len(networkstatus.interfaces) == 1
+    assert networkstatus.system is not None
+    assert networkstatus.system.interface == "sta0"
+
+    # Test with minimal data
     minimal_data = {
         "ts": "1234567890",
     }
-    response = GetCommResponse(**minimal_data)
-    assert response.ts == "1234567890"
-    assert response.interfaces is None
-    assert response.system is None
+    networkstatus_minimal = NetworkStatus(**minimal_data)  # type: ignore[arg-type]
+    assert networkstatus_minimal.ts == "1234567890"
+    assert networkstatus_minimal.interfaces is None
+    assert networkstatus_minimal.system is None
 
-    # Test with empty interfaces and system
-    empty_data = {
-        "interfaces": [],
+    # Test with None values
+    none_data = {
+        "interfaces": None,
         "system": None,
-        "ts": "1234567890",
+        "ts": None,
     }
-    response_empty = GetCommResponse(**empty_data)
-    assert response_empty.ts == "1234567890"
-    assert response_empty.interfaces == []
-    assert response_empty.system is None
+    networkstatus_none = NetworkStatus(**none_data)  # type: ignore[arg-type]
+    assert networkstatus_none.ts is None
+    assert networkstatus_none.interfaces is None
+    assert networkstatus_none.system is None
 
 
 def test_interface_ipaddr_parsing():
     """Test Interface IP address parsing edge cases."""
     # Test valid IPv4 address
     valid_ip_data = {"interface": "test", "ipaddr": "192.168.1.1"}
-    interface = Interface(**valid_ip_data)
+    interface = Interface(**valid_ip_data)  # type: ignore[arg-type]
     assert str(interface.ipaddr) == "192.168.1.1"
 
     # Test empty string (should become None)
     empty_ip_data = {"interface": "test", "ipaddr": ""}
-    interface = Interface(**empty_ip_data)
+    interface = Interface(**empty_ip_data)  # type: ignore[arg-type]
     assert interface.ipaddr is None
 
     # Test None value
     none_ip_data = {"interface": "test", "ipaddr": None}
-    interface = Interface(**none_ip_data)
+    interface = Interface(**none_ip_data)  # type: ignore[arg-type]
     assert interface.ipaddr is None
 
     # Test missing ipaddr field
     no_ip_data = {"interface": "test"}
-    interface = Interface(**no_ip_data)
+    interface = Interface(**no_ip_data)  # type: ignore[arg-type]
     assert interface.ipaddr is None

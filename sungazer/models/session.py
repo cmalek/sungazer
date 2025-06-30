@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field
 
 
-class StartResponse(BaseModel):
+class Supervisor(BaseModel):
     """
-    Response model for the ``Command=Start`` API endpoint.
+    Details about the supervisor, the PVS6 device
 
     This model contains detailed version information about the device hardware,
     firmware, and software components. It serves as an initial response when
@@ -32,6 +32,19 @@ class StartResponse(BaseModel):
     WNSERIAL: int | None = Field(None, examples=[16])
     #: Build number of the software.
     BUILD: int | None = Field(None, examples=[5000])
+
+
+class StartResponse(BaseModel):
+    """
+    Response model for the ``Command=Start`` API endpoint.
+
+    This model contains detailed version information about the device hardware,
+    firmware, and software components. It serves as an initial response when
+    establishing a session with the device.
+    """
+
+    result: str = Field(..., examples=["success"])
+    supervisor: Supervisor
 
 
 class StopResponse(BaseModel):

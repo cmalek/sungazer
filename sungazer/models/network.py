@@ -119,6 +119,17 @@ class System(BaseModel):
     sms: str | None = Field(None, description="sms status", examples=["reachable"])
 
 
+class NetworkStatus(BaseModel):
+    #: The list of network interfaces.
+    interfaces: list[Interface] | None = None
+    #: The system information.
+    system: System | None = None
+    #: The system timestamp.
+    ts: str | None = Field(
+        None, description="the system timestamp", examples=["1575501242"]
+    )
+
+
 class GetCommResponse(BaseModel):
     """
     Response model for the ``Command=Get_Comm`` API endpoint.
@@ -128,11 +139,5 @@ class GetCommResponse(BaseModel):
     was collected.
     """
 
-    #: The list of network interfaces.
-    interfaces: list[Interface] | None = None
-    #: The system information.
-    system: System | None = None
-    #: The system timestamp.
-    ts: str | None = Field(
-        None, description="the system timestamp", examples=["1575501242"]
-    )
+    result: str = Field(..., examples=["success"])
+    networkstatus: NetworkStatus | None = None
