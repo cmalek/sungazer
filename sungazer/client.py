@@ -20,15 +20,17 @@ T = TypeVar("T")
 class BaseClient:
     """Base client with common HTTP methods."""
 
-    def __init__(self, client: httpx.Client):
+    def __init__(self, client: httpx.Client, serial: str | None = None):
         """
         Initialize with an httpx client.
 
         Args:
             client: The httpx client to use for requests
+            serial: The serial number of the PVS6 device
 
         """
         self.client = client
+        self.serial = serial
 
     def _handle_response(self, response: httpx.Response, model_class: Type[T]) -> T:
         """
@@ -131,11 +133,15 @@ class NetworkClient(BaseClient):
         try:
             return cast(
                 "GetCommResponse",
-                self._get("/dl_cgi/network/settings", GetCommResponse),
+                self._get(
+                    "/dl_cgi",
+                    GetCommResponse,
+                    params={"Command": "Get_Comm", "SerialNumber": self.serial},
+                ),
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                msg = f"Failed to list interfaces: {e.response.json}"
+                msg = f"Failed to list interfaces: {e.response.json()}"
                 raise ValueError(msg) from e
             raise
 
@@ -230,7 +236,10 @@ class SungazerClient:
     """Client for interacting with the Sungazer PVS6 API."""
 
     def __init__(
-        self, base_url: str = "http://sunpowerconsole.com/cgi-bin", timeout: int = 30
+        self,
+        base_url: str = "http://sunpowerconsole.com/cgi-bin",
+        timeout: int = 30,
+        serial: str | None = None,
     ):
         """
         Initialize the Sungazer client.
@@ -238,17 +247,18 @@ class SungazerClient:
         Args:
             base_url: The base URL for the API
             timeout: Request timeout in seconds
+            serial: The serial number of the PVS6 device
 
         """
         self.base_url = base_url
-        self.client = httpx.Client(base_url=base_url, timeout=timeout)
+        self.serial = serial
 
         # Initialize specialized clients
-        self.session = SessionClient(self.client)
-        self.network = NetworkClient(self.client)
-        self.devices = DeviceClient(self.client)
-        self.firmware = FirmwareClient(self.client)
-        self.grid_profiles = GridProfileClient(self.client)
+        self.session = SessionClient(self.client, serial=serial)
+        self.network = NetworkClient(self.client, serial=serial)
+        self.devices = DeviceClient(self.client, serial=serial)
+        self.firmware = FirmwareClient(self.client, serial=serial)
+        self.grid_profiles = GridProfileClient(self.client, serial=serial)
 
     def __enter__(self):
         """Enter the context manager."""

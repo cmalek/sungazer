@@ -36,6 +36,7 @@ def load_config() -> Dict[str, Any]:
     result = {
         "base_url": "http://sunpowerconsole.com/cgi-bin",
         "timeout": 30,
+        "serial": None,
     }
 
     for config_file in config_files:
@@ -46,6 +47,8 @@ def load_config() -> Dict[str, Any]:
                     result["base_url"] = config["sungazer"]["base_url"]
                 if "timeout" in config["sungazer"]:
                     result["timeout"] = int(config["sungazer"]["timeout"])
+                if "serial" in config["sungazer"]:
+                    result["serial"] = config["sungazer"]["serial"]
             break
 
     return result
