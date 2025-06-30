@@ -5,7 +5,7 @@ import click
 from sungazer.cli.main import handle_exceptions, output_formatter
 
 
-@click.group(help="Grid profile management commands.")
+@click.group(name="grid-profile", help="Grid profile management commands.")
 def grid_profile():
     """
     Grid profile management commands.
@@ -16,7 +16,7 @@ def grid_profile():
     """
 
 
-@grid_profile.command(help="Get the current grid profile configuration.")
+@grid_profile.command(name="get", help="Get the current grid profile configuration.")
 @click.pass_context
 @handle_exceptions
 def get(ctx):
@@ -43,7 +43,9 @@ def get(ctx):
     output_formatter(result.model_dump(), output_format)
 
 
-@grid_profile.command(help="Refresh the list of available grid profiles.")
+@grid_profile.command(
+    name="refresh", help="Refresh the list of available grid profiles."
+)
 @click.pass_context
 @handle_exceptions
 def refresh(ctx):
