@@ -53,8 +53,16 @@ class BaseClient:
         if not response.content:
             return model_class()
 
-        data = response.json()
-        return model_class(**data)  # type: ignore[attr-defined]
+        _content = response.text
+        content = []
+        # for some reason we get the http headers in the response.text sometimes
+        # so we have to remove them
+        for line in _content.splitlines():
+            if not line.startswith(("{", "\t", "}")):
+                continue
+            content.append(line)
+        _content = "\n".join(content)
+        return model_class(**json.loads(_content))  # type: ignore[attr-defined]
 
     def _get(
         self,
