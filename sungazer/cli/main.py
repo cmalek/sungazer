@@ -190,6 +190,7 @@ def cli(ctx, base_url, timeout, output):
     client = SungazerClient(
         base_url=config["base_url"],
         timeout=config["timeout"],
+        serial=config["serial"],
     )
 
     # Store in context
