@@ -2,6 +2,8 @@ import configparser
 import json
 import sys
 import traceback
+from datetime import datetime
+from ipaddress import IPv4Address
 from pathlib import Path
 from typing import Any, Dict
 
@@ -10,6 +12,17 @@ from rich.console import Console
 from rich.table import Table
 
 from sungazer.client import SungazerClient
+
+
+class OddTypeEncoder(json.JSONEncoder):
+    """Custom JSON encoder that handles datetime and IPv4Address objects."""
+
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        if isinstance(obj, IPv4Address):
+            return str(obj)
+        return super().default(obj)
 
 
 def load_config() -> Dict[str, Any]:
@@ -79,7 +92,7 @@ def output_formatter(data: Any, output_format: str):  # noqa: PLR0912
 
     """
     if output_format == "json":
-        click.echo(json.dumps(data, indent=2))
+        click.echo(json.dumps(data, indent=2, cls=OddTypeEncoder))
     elif output_format == "table":
         console = Console()
 
@@ -116,7 +129,7 @@ def output_formatter(data: Any, output_format: str):  # noqa: PLR0912
 
             for key, value in data.items():
                 if isinstance(value, (dict, list)):
-                    table.add_row(key, json.dumps(value, indent=2))
+                    table.add_row(key, json.dumps(value, indent=2, cls=OddTypeEncoder))
                 else:
                     table.add_row(key, str(value))
 
