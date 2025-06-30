@@ -1,15 +1,17 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Type, TypeVar, cast
+import json
+from re import I
+from typing import Any, TypeVar, cast
 
 import httpx
-
-from sungazer.models.grid import GridProfileGetResponse, GridProfileRefreshResponse
 
 from .models import (
     CheckFWResponse,
     DeviceDetailResponse,
     GetCommResponse,
+    GridProfileGetResponse,
+    GridProfileRefreshResponse,
     StartResponse,
     StopResponse,
 )
@@ -32,7 +34,7 @@ class BaseClient:
         self.client = client
         self.serial = serial
 
-    def _handle_response(self, response: httpx.Response, model_class: Type[T]) -> T:
+    def _handle_response(self, response: httpx.Response, model_class: type[T]) -> T:
         """
         Handle the API response.
 
@@ -67,8 +69,8 @@ class BaseClient:
     def _get(
         self,
         path: str,
-        model_class: Type[T] | None = None,
-        params: Dict[str, Any] | None = None,
+        model_class: type[T] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> T | dict:
         """
         Send a GET request to the API.
@@ -84,7 +86,7 @@ class BaseClient:
         """
         response = self.client.get(path, params=params)
         if model_class is None:
-            return cast("dict", response)
+            return cast("dict", json.loads(response.text))
         return self._handle_response(response, model_class)
 
 
@@ -103,7 +105,7 @@ class SessionClient(BaseClient):
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
-                msg = f"Start failed: {e.response.json()}"
+                msg = f"Start failed: {e.response!s}"
                 raise ValueError(msg) from e
             raise
 
@@ -184,7 +186,10 @@ class FirmwareClient(BaseClient):
 
         """
         try:
-            return cast("CheckFWResponse", self._get("/dl_cgi/fw", CheckFWResponse))
+            return cast(
+                "CheckFWResponse",
+                self._get("/dl_cgi", CheckFWResponse, params={"Command": "CheckFW"}),
+            )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
                 msg = f"Failed to get firmware info: {e.response.json()}"
@@ -209,7 +214,11 @@ class GridProfileClient(BaseClient):
         try:
             return cast(
                 "GridProfileGetResponse",
-                self._get("/dl_cgi/gridprofiles", GridProfileGetResponse),
+                self._get(
+                    "/dl_cgi",
+                    GridProfileGetResponse,
+                    params={"Command": "GridProfileGet"},
+                ),
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
@@ -231,7 +240,11 @@ class GridProfileClient(BaseClient):
         try:
             return cast(
                 "GridProfileRefreshResponse",
-                self._get("/dl_cgi/gridprofiles/status", GridProfileRefreshResponse),
+                self._get(
+                    "/dl_cgi",
+                    GridProfileRefreshResponse,
+                    params={"Command": "GridProfileRefreshResponse"},
+                ),
             )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500:
@@ -260,6 +273,7 @@ class SungazerClient:
         """
         self.base_url = base_url
         self.serial = serial
+        self.client = httpx.Client(base_url=base_url, timeout=timeout, verify=False)  # noqa: S501
 
         # Initialize specialized clients
         self.session = SessionClient(self.client, serial=serial)
