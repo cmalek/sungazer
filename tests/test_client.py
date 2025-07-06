@@ -71,7 +71,7 @@ class TestBaseClient:
         mock_response.text = json.dumps(data)
         mock_response.raise_for_status.return_value = None
 
-        result = base_client._handle_response(mock_response, StartResponse)
+        result = base_client._handle_response(mock_response, StartResponse)  # noqa: SLF001
         assert isinstance(result, StartResponse)
         assert result.result == "success"
         assert result.supervisor.MODEL == "PVS6"
@@ -85,7 +85,7 @@ class TestBaseClient:
         mock_response.text = json.dumps(data)
         mock_response.raise_for_status.return_value = None
 
-        result = base_client._handle_response(mock_response, StartResponse)
+        result = base_client._handle_response(mock_response, StartResponse)  # noqa: SLF001
         assert isinstance(result, StartResponse)
         assert result.result == "success"
 
@@ -97,7 +97,7 @@ class TestBaseClient:
         mock_response.text = "HTTP/1.1 200 OK\n" + json.dumps(data) + "\n"
         mock_response.raise_for_status.return_value = None
 
-        result = base_client._handle_response(mock_response, StartResponse)
+        result = base_client._handle_response(mock_response, StartResponse)  # noqa: SLF001
         assert isinstance(result, StartResponse)
         assert result.result == "success"
 
@@ -109,7 +109,7 @@ class TestBaseClient:
         )
 
         with pytest.raises(httpx.HTTPStatusError):
-            base_client._handle_response(mock_response, StartResponse)
+            base_client._handle_response(mock_response, StartResponse)  # noqa: SLF001
 
     def test_get_request_success(self, base_client, mock_httpx_client):
         """Test successful GET request."""
@@ -121,7 +121,7 @@ class TestBaseClient:
         mock_response.raise_for_status.return_value = None
         mock_httpx_client.get.return_value = mock_response
 
-        result = base_client._get("/test", StartResponse, {"param": "value"})
+        result = base_client._get("/test", StartResponse, {"param": "value"})  # noqa: SLF001
         assert isinstance(result, StartResponse)
         assert result.result == "success"
 
@@ -136,7 +136,7 @@ class TestBaseClient:
         mock_response.text = '{"result": "success"}'
         mock_httpx_client.get.return_value = mock_response
 
-        result = base_client._get("/test", params={"param": "value"})
+        result = base_client._get("/test", params={"param": "value"})  # noqa: SLF001
         assert result == {"result": "success"}
 
     def test_get_request_without_params(self, base_client, mock_httpx_client):
@@ -148,7 +148,7 @@ class TestBaseClient:
         mock_response.raise_for_status.return_value = None
         mock_httpx_client.get.return_value = mock_response
 
-        result = base_client._get("/test", StartResponse)
+        result = base_client._get("/test", StartResponse)  # noqa: SLF001
         assert isinstance(result, StartResponse)
         assert result.result == "success"
 
@@ -200,7 +200,7 @@ class TestSessionClient:
         """Test session start with HTTP 500 error."""
         mock_response = Mock(spec=httpx.Response)
         mock_response.status_code = 500
-        mock_response.__str__ = lambda self: "500 Internal Server Error"
+        mock_response.__str__ = lambda self: "500 Internal Server Error"  # type: ignore[attr-defined]  # noqa: ARG005
         mock_response.raise_for_status.side_effect = httpx.HTTPStatusError(
             "500 Internal Server Error", request=Mock(), response=mock_response
         )
@@ -316,7 +316,7 @@ class TestNetworkClient:
         mock_response.content = json.dumps(valid_response_data).encode()
         mock_response.text = json.dumps(valid_response_data)
         mock_response.raise_for_status.return_value = None
-        network_client.client.get.return_value = mock_response
+        network_client.client.get.return_value = mock_response  # type: ignore[attr-defined]
 
         result = network_client.list()
         assert isinstance(result, GetCommResponse)
@@ -328,7 +328,7 @@ class TestNetworkClient:
         assert result.networkstatus.interfaces[0].interface == "sta0"
 
         # Verify the request was made with None serial
-        network_client.client.get.assert_called_once_with(
+        network_client.client.get.assert_called_once_with(  # type: ignore[attr-defined]
             "/dl_cgi",
             params={"Command": "Get_Comm", "SerialNumber": None},
         )
@@ -549,7 +549,7 @@ class TestGridProfileClient:
 
         with pytest.raises(
             ValueError,
-            match="Failed to get grid profile status: {'error': 'Internal server error'}",
+            match="Failed to get grid profile status: {'error': 'Internal server error'}",  # noqa: E501
         ):
             grid_profile_client.refresh()
 
@@ -655,8 +655,9 @@ class TestSungazerClient:
             mock_client_class.return_value = mock_client
 
             try:
-                with SungazerClient() as client:
-                    raise ValueError("Test exception")
+                with SungazerClient():
+                    msg = "Test exception"
+                    raise ValueError(msg)  # noqa: TRY301
             except ValueError:
                 pass
 
