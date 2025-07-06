@@ -161,3 +161,29 @@ experience.
 - `Kiel Koleson: PVS6 notes <https://gist.github.com/koleson/5c719620039e0282976a8263c068e85c>`_
 - `Gino Ledesma and John Mu: SunPower PVS5x/PVS6 Notes <https://github.com/ginoledesma/sunpower-pvs-exporter/blob/master/sunpower_pvs_notes.md>`_
 - `Scott Gruby: Monitoring a SunPower Solar System <https://blog.gruby.com/2020/04/28/monitoring-a-sunpower-solar-system.html>`_
+- `Nelson Minar: Getting local access to SunPower PVS6 data <https://nelsonslog.wordpress.com/2021/12/02/getting-local-access-to-sunpower-pvs6-data/>`_
+- `Diogo? SunPower_PVS_Guides <https://github.com/thedmpd/Sunpower_PVS_Guides/blob/main/SunPower_PVS_Local_Monitoring.pdf>`_: A guide to getting local access to SunPower PVS6 data, leans heavily on the Dolf Starreveld guide.
+- `MrStrabo: PVS5-6 Reverse Proxy Guide <https://github.com/MrStrabo/PVS5-6_Reverse_Proxy_Guide>`_: A guide to setting up a reverse proxy to get data from the PVS6.
+
+And most especially, a truly invaluable and comprehensive resource:
+
+- `Dolf Starreveld: PVS6 Access and API.pdf <https://starreveld.com/PVS6%20Access%20and%20API.pdf>`_
+
+
+Other Software
+--------------
+
+These are other software projects that are related to the SunPower PVS6 API, and
+may be useful for your own projects.  Looking at their code may be useful for
+understanding the API and how to use it in different ways.
+
+- `sunpower-pvs-exporter <https://github.com/ginoledesma/sunpower-pvs-exporter>`_: A python based Prometheus exporter for the SunPower PVS6.
+- `hass-sunpower <https://github.com/krbaker/hass-sunpower>`_: A Home Assistant integration for SunPower PVS6 systems.
+- `sunpower_hass <https://github.com/jrconlin/sunpower_hass>`_: An intermediate CGI script that can be used to get data from the PVS6 and expose it to Home Assistant.  You run it on a Raspberry Pi connected to the PVS6, and use Home Assistant to display the data.  Good docs for how to do the hardware setup.
+- `sunpower-ess-monitor <>`
+- `pysunpower <https://github.com/jeeftor/pysunpower>`_: Another Python API client for the PVS6
+- `SunPower_Solar <https://github.com/artfulKraken/SunPower_Solar>`_: A Rust implementation of a SunPower API client that pulls data from the PVS6 and exports it to a database via a Raspberry Pi.
+- `esphome-sunpower <https://github.com/kpfleming/esphome-sunpower>`_: This repo contains a series of experimental ESPHome components which gather data from SunPower PV Supervisor (PVS) devices. It requires ESPHome 2024.6.0 or later. This includes an interesting synthesized version of the "From Grid" and "To Grid" power data when that data is not available in the API.
+- `pvs <https://github.com/jeffkowalski/pvs>`_: A Ruby gem that can be used to get data from the PVS6.
+- `Sunned <https://github.com/MrStrabo/Sunned>`_: A python script that polls ``dl_cgi?Command=DeviceList`` and stores the results in a database.
+
