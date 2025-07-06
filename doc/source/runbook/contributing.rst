@@ -10,7 +10,7 @@ Make a clone of the bitbucket repo:
 
 .. code-block:: shell
 
-    git clone https://github.com/caltechads/botocraft.git
+    git clone https://github.com/cmalek/sungazer.git
 
 Workflow is pretty straightforward:
 
@@ -27,12 +27,6 @@ Workflow is pretty straightforward:
 
 Preconditions for working on this project
 -----------------------------------------
-
-AWS credentials
-^^^^^^^^^^^^^^^
-
-Set up your AWS credentials.  This is up to you and how your organization does it.
-
 
 Python environment
 ^^^^^^^^^^^^^^^^^^
@@ -53,27 +47,13 @@ MacOS and Linux
 
     Then run:
 
-
-Regenerating the service classes
-------------------------------
-
-After you've made changes to the yaml files in ``botocraft/data``,  or to the
-sync code in ``botocraft.sync`` you'll need to regenerate the service classes.
-You can do this by running the following command:
-
-    .. code-block:: shell
-
-        botocraft sync
-
-
-Testing out botocraft
-----------------------
-
-To test out your changes to botocraft, you can run the following command:
+Testing out sungazer
+--------------------
+To test out your changes to sungazer, you can run the following command:
 
 .. code-block:: shell
 
-    botocraft shell
+    sungazer shell
 
 
 This will start an ipython shell with all botocraft service classes loaded. You can

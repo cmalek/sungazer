@@ -41,8 +41,7 @@ docs = [
   "sphinx<7",
   "sphinx_rtd_theme == 2.0.0",
   "sphinxcontrib-images >= 0.9.4",
-  "autodoc_pydantic >= 2.0.0",
-  "diagrams >= 0.23.3",
+  "autodoc-pydantic>=2.0.0",
   "setuptools>=75.1.0",
 ]
 build = [

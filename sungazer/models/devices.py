@@ -27,37 +27,30 @@ class BaseDeviceDetail(BaseModel):
     extend this model with additional specialized fields.
     """
 
-    #: Details about the device
     ISDETAIL: bool = Field(
         True,  # noqa: FBT003
         description="Details about the device",
         examples=[True],
     )
-    #: The state of the device
     STATE: str | None = Field(
         None, description="State of the device", examples=["working"]
     )
-    #: Description of the state
     STATEDESCR: str | None = Field(
         None, description="Description of the state", examples=["Working"]
     )
-    #: Serial number of the device
     SERIAL: str | None = Field(
         None,
         description="The serial number of the device",
         examples=["ZT112345678912A0069"],
     )
-    #: The manufacturer's model of the device
     MODEL: str | None = Field(
         None,
         description="The manufacturer's model of the device",
         examples=["PVS6M0400p"],
     )
-    #: The hardware version of the device
     HWVER: str | None = Field(
         None, description="The hardware version", examples=["6.02"]
     )
-    #: The firmware version of the device
     SWVER: str | None = Field(
         None,
         description="The software version  of the firmware",
@@ -65,7 +58,6 @@ class BaseDeviceDetail(BaseModel):
     )
     #: The device type
     DEVICE_TYPE: DeviceType | None = None
-    #: The detailed device type, possibly including manufacturer
     TYPE: str | None = Field(
         None,
         description=(
@@ -73,25 +65,19 @@ class BaseDeviceDetail(BaseModel):
         ),
         examples=["PVS5-METER-P"],
     )
-    #: The port that the device is connected to, if applicable
     PORT: str | None = Field(
         None, description="The port the device is connected to", examples=["COM1"]
     )
-    #: The last time the data was recorded
     DATATIME: datetime | None = Field(
         None, description="The time the data was recorded"
     )
-    #: The current time as reported by the device
     CURTIME: datetime | None = Field(
         None, description="The current time as reported by the device"
     )
-    #: Operation type
     OPERATION: str | None = Field(None, description="Operation type", examples=["noop"])
-    #: Origin of this data
     origin: str | None = Field(
         None, description="Origin of this data", examples=["data_logger"]
     )
-    #: The PAN ID of the device, used to determine ownership of MI devices
     panid: float | None = Field(
         None,
         description=(
@@ -160,14 +146,10 @@ class PVSDeviceDetail(BaseDeviceDetail):
     system for the solar installation.
     """
 
-    #: The number of comms errors detected since last report (PVS only)
     dl_error_count: int | None = Field(
         None, description="Number of comms errors detected since last report"
     )
-    #: The total number of comms errors (PVS only)
     dl_comm_err: int | None = Field(None, description="Number of comms errors")
-    #: The number of times the supervisor skipped scanning the PLC network for
-    #: inverters (PVS only)
     dl_skipped_scans: int | None = Field(
         None,
         description=(
@@ -176,19 +158,15 @@ class PVSDeviceDetail(BaseDeviceDetail):
         ),
         examples=[0],
     )
-    #: The CPU load of the PVS device (PVS only)
     dl_cpu_load: float | None = Field(
         None, description="The CPU load of the device", examples=[12.5]
     )
-    #: How much free flash memory is available (PVS only)
     dl_flash_avail: int | None = Field(
         None, description="How much free flash memory is available", examples=[12234]
     )
-    #: How much memory is used, probably in kB (PVS only)
     dl_mem_used: int | None = Field(
         None, description="How much memory is used, probably in kB", examples=[23456]
     )
-    #: How long the last scan of the PLC network took, maybe in milliseconds (PVS only)
     dl_scan_time: int | None = Field(
         None,
         description=(
@@ -196,7 +174,6 @@ class PVSDeviceDetail(BaseDeviceDetail):
         ),
         examples=[1234],
     )
-    #: The number of events/records not yet transmitted? (PVS only)
     dl_untransmitted: int | None = Field(
         None, description="Numbeer of not yet transmitted events/records?", examples=[0]
     )
@@ -204,9 +181,7 @@ class PVSDeviceDetail(BaseDeviceDetail):
     #: observed to be lower after 24hrs, so either there can be restarts for power
     #: reasons or perhaps the device itself restarts itself periodically (to clear
     #: memory leaks?)
-    dl_uptime: int | None = Field(
-        None, description="Uptime of the data logger in seconds", examples=[123456]
-    )
+    dl_uptime: int | None = Field(None, examples=[123456])
 
     @property
     def last_restart_time(self) -> datetime | None:
@@ -247,43 +222,35 @@ class PowerMeterDeviceDetail(BaseDeviceDetail):
     and building electrical infrastructure.
     """
 
-    #: The type of interface used by the device
     interface: str | None = Field(
         None, description="The type of interface used by the device", examples=["mime"]
     )
-    # THe meter subtype
     subtype: str | None = Field(
         None, description="The subtype of meter", examples=["GROSS_PRODUCTION_SITE"]
     )
-    #: The sensor's current capacity for the calibration-reference CT sensor
-    #: Current capacity of the current sensor in Amps.
     ct_scl_fctr: int | None = Field(
         None,
-        description=("Current capacity of the current sensor in Amps."),
+        description=(
+            "Current capacity of the calibration-reference CT sensor in Amps."
+        ),
         examples=[50],
     )
-    #: Net cumulative kWh, across all 3 phases
     net_ltea_3phsum_kwh: float | None = Field(
         None, description="Net cumulative kWh, across all 3 phases", examples=[198.92]
     )
-    #: Average real power (kW)
     p_3phsum_kw: float | None = Field(
         None, description="Average real power (kW)", examples=[1.9867]
     )
-    #: Average reactive power (kVA) across all 3 phases
     q_3phsum_kvar: float | None = Field(
         None,
         description="Average reactive power (kVA) across all 3 phases",
         examples=[0.1234],
     )
-    #: Average apparent power (kVA) across all 3 phases
     s_3phsum_kva: float | None = Field(
         None,
         description="Average apparent power (kVA) across all 3 phases",
         examples=[2.0],
     )
-    #: Total power factor ratio, defined as real power (kW) divided by apparent
-    #: power (kVA)
     tot_pf_rto: float | None = Field(
         None,
         description=(
@@ -292,17 +259,15 @@ class PowerMeterDeviceDetail(BaseDeviceDetail):
         ),
         examples=[0.993],
     )
-    #: Operating frequency in Hz
     freq_hz: float | None = Field(
         None, description="Operating Frequency in Hz", examples=[60.0]
     )
-    #: The sensor's current capacity for the calibration-reference CT sensor. It
-    #: will be "50" (50A) for the production meter and 100 or 200 for the
-    #: consumption meter.
     CAL0: int | None = Field(
         None,
         description=(
             "The sensor's current capacity for the calibration-reference CT sensor."
+            "It will be 50 (50A) for the production meter and 100 or 200 for the "
+            "consumption meter."
         ),
         examples=[50],
     )
@@ -358,44 +323,38 @@ class ConsumptionPowerMeterDeviceDetail(PowerMeterDeviceDetail):
     PVS6.
     """
 
-    #: The consumption meter subtype enum
     consumption_subtype_enum: str | None = Field(
         None,
         description="The consumption subtype enum",
         examples=["NET_CONSUMPTION_LOADSIDE"],
     )
-    #: The sensor's current capacity for the calibration-reference CT sensor. It
-    #: will be "50" (50A) for the production meter and 100 or 200 for the
-    #: consumption meter.
-    #: Current in Amps on CT1 lead
     i1_a: float | None = Field(
-        None, description="Current in Amps on CT1 lead", examples=[1.2]
+        None,
+        description=(
+            "The sensor's current capacity for the calibration-reference CT sensor."
+            "It will be 50 (50A) for the production meter and 100 or 200 for the "
+            "consumption meter."
+        ),
+        examples=[1.2],
     )
-    #: Current in Amps on CT2 lead
     i2_a: float | None = Field(
         None, description="Current in Amps on CT2 lead", examples=[1.2]
     )
-    #: Supply voltage CT1 lead
     v1n_v: float | None = Field(
         None, description="Voltage in Volts on lead 1 to neutral", examples=[120.0]
     )
-    #: Supply voltage CT2 lead
     v2n_v: float | None = Field(
         None, description="Voltage in Volts on lead 2 to neutral", examples=[120.0]
     )
-    #: Lead 1 average power in kW
     p1_kw: float | None = Field(
         None, description="Lead 1 average power in kW", examples=[0.123]
     )
-    #: Lead 2 average power in kW
     p2_kw: float | None = Field(
         None, description="Lead 2 average power in kW", examples=[0.123]
     )
-    #: Cumulative kWh imported from utility
     neg_ltea_3phsum_kwh: float | None = Field(
         None, examples=[123.45], description="Cumulative kWh imported from utility"
     )
-    #: Cumulative kWh exported to utility
     pos_ltea_3phsum_kwh: float | None = Field(
         None, examples=[234.56], description="Cumulative kWh exported to utility"
     )
@@ -419,11 +378,9 @@ class SolarBridgeDeviceDetail(BaseDeviceDetail):
     PVS6.
     """
 
-    #: The type of interface used by the panel?
     interface: str | None = Field(
         None, description="The type of interface used by the panel?", examples=["mime"]
     )
-    #: The hardware version of the device
     hw_version: str | None = Field(
         None, description="Hardware version", examples=["1.0"]
     )
@@ -432,7 +389,6 @@ class SolarBridgeDeviceDetail(BaseDeviceDetail):
         description="Serial number of the inverter module",
         examples=["12345678901234"],
     )
-    #: The model of the solar panel module
     PANEL: str | None = Field(
         None,
         description="Model of the solar panel module",
@@ -451,54 +407,43 @@ class SolarBridgeDeviceDetail(BaseDeviceDetail):
         description="SKU of the microinverter",
         examples=["SB250-1BD-US"],
     )
-    #: Total Energy in kWh
     ltea_3phsum_kwh: float | None = Field(
         None, description="Total Energy in kWh", examples=[123.45]
     )
-    #: AC Power (kW)
     p_3phsum_kw: float | None = Field(
         None, description="AC Power (kW)", examples=[0.0471]
     )
-    #: AC Voltage (V)
     vln_3phsum_v: float | None = Field(
         None, description="AC Voltage (V)", examples=[246.5]
     )
-    #: AC Current (A)
     i_3phsum_a: float | None = Field(
         None, description="AC Current (A)", examples=[0.19]
     )
-    #: DC Power (kW) for MPTT (Maximum Power Point Tracking)
     p_mppt1_v: float | None = Field(
         None,
         description="DC Power (kW) for MPTT (Maximum Power Point Tracking)",
         examples=[0.0502],
     )
-    #: DC Voltage (V) for MPTT (Maximum Power Point Tracking)
     v_mppt1_v: float | None = Field(
         None,
         description="DC Voltage (V) for MPTT (Maximum Power Point Tracking)",
         examples=[54.5],
     )
-    #: DC Current (A) for MPTT (Maximum Power Point Tracking)
     i_mppt1_a: float | None = Field(
         None,
         description="DC Current (A) for MPTT (Maximum Power Point Tracking)",
         examples=[0.92],
     )
-    #: Legacy? Sees replacd by p_mppt1_kw
     p_mpptsum_kw: float | None = Field(
         None,
-        description="Legacy? Sees replacd by p_mppt1_kw",
+        description="Legacy? Seems replaced by p_mppt1_kw",
     )
-    #: Heatsink temperature in degrees C
     t_htsink_degc: float | None = Field(
         None, description="Heatsink temperature in degrees C", examples=[45.0]
     )
-    #: Operating Frequency in Hz
     freq_hz: float | None = Field(
         None, description="Operating Frequency in Hz", examples=[60.0]
     )
-    #: Status code?
     stat_ind: int | None = Field(None, description="Status indicator?", examples=[0])
 
 
@@ -516,60 +461,48 @@ class PVDisconnectDetail(BaseDeviceDetail):
     if a PV disconnect device is connected to the PVS6 system.
     """
 
-    #: Count of "events" seen so far
     event_history: int | None = Field(
         None, description="Count of 'events' seen so far", examples=[32]
     )
-    #: The hardware version of the device
     hw_version: str | None = Field(
         None, description="The hardware version", examples=["0.2.0"]
     )
-    #: The type of interface used by the panel?
     interface: str | None = Field(
         None,
         description="The type of interface used by the panel",
         examples=["ttymxc5"],
     )
-    #: Slave number?
     slave: int | None = Field(None, description="Slave number", examples=[230])
-    #: Error count for firmware operations
     fw_error: int | None = Field(
         None,
         description="Error count for firmware operations",
         examples=[0, 1, 2],
     )
-    #: The relay mode of the disconnect, if applicable
     relay_mode: int | None = Field(
         None,
         description="Indicates the relay mode of the disconnect",
         examples=[0, 1],
     )
-    #: Relay 1 state, indicating the operational status of the disconnect
     relay1_state: Literal[0, 1] | None = Field(
         None,
         description="State of Relay 1, indicating operational status",
         examples=[0, 1],
     )
-    #: Relay 2 state, indicating the operational status of the disconnect
     relay2_state: Literal[0, 1] | None = Field(
         None,
         description="State of Relay 2, indicating operational status",
         examples=[0, 1],
     )
-    #: Error count for relay 1
     relay1_error: int | None = Field(
         None,
         description="Error count for Relay 1",
         examples=[0, 1, 2],
     )
-    #: Error count for relay 2
     relay2_error: int | None = Field(
         None,
         description="Error count for Relay 2",
         examples=[0, 1, 2],
     )
-    #: Voltage differential between line and neutral at the
-    #: disconnect in volts for phase 1
     v1n_grid_v: float | None = Field(
         None,
         description=(
@@ -578,8 +511,6 @@ class PVDisconnectDetail(BaseDeviceDetail):
         ),
         examples=[120.0],
     )
-    #: Voltage differential between line and neutral at the
-    #: disconnect in volts for phase 2
     v2n_grid_v: float | None = Field(
         None,
         description=(
@@ -588,7 +519,6 @@ class PVDisconnectDetail(BaseDeviceDetail):
         ),
         examples=[120.0],
     )
-    #: Voltage differential between phase 1 neutral and the PV system
     v1n_pv_v: float | None = Field(
         None,
         description=(
@@ -596,7 +526,6 @@ class PVDisconnectDetail(BaseDeviceDetail):
         ),
         examples=[120.0],
     )
-    #: Voltage differential between phase 2 neutral and the PV system
     v2n_pv_v: float | None = Field(
         None,
         description=(
@@ -660,19 +589,16 @@ class Gateway(BaseDeviceDetail):
     if a gateway device is connected to the PVS6 system.
     """
 
-    #: The type of interface used by the gateway
     interface: str | None = Field(
         None,
         description="The type of interface used by the gateway",
         examples=["sunspec"],
     )
-    #: The MAC address of the gateway device
     mac_address: str | None = Field(
         None,
         description="The MAC address of the gateway device",
         examples=["d8:a9:ab:cd:12:34"],
     )
-    #: The slave number of the gateway device
     slave: int | None = Field(None, description="The slave number", examples=[1])
 
 
@@ -690,25 +616,24 @@ class SchneiderXwPro(BaseDeviceDetail):
     if a Schneider XW Pro storage inverter is connected to the PVS6 system.
     """
 
-    #: The type of interface used by the storage inverter
     interface: str | None = Field(
         None,
         description="The type of interface used by the storage inverter",
         examples=["sunspec"],
     )
-    #: The MAC address of the storage inverter device
     mac_address: str | None = Field(
         None,
         description="The MAC address of the storage inverter device",
         examples=["d8:a9:ab:cd:12:34"],
     )
-    #: The parent device identifier
     parent: int | None = Field(
         None, description="The parent device identifier", examples=[11]
     )
-    #: The slave number of the storage inverter device
-    slave: int | None = Field(None, description="The slave number", examples=[10])
-    #: The parent device serial number
+    slave: int | None = Field(
+        None,
+        description="The slave number for the storage inverter device",
+        examples=[10],
+    )
     PARENT: str | None = Field(
         None,
         description="The parent device serial number",
@@ -730,25 +655,22 @@ class EquinioxBMS(BaseDeviceDetail):
     if an Equiniox BMS is connected to the PVS6 system.
     """
 
-    #: The type of interface used by the BMS
     interface: str | None = Field(
         None,
         description="The type of interface used by the BMS",
         examples=["sunspec"],
     )
-    #: The MAC address of the BMS device
     mac_address: str | None = Field(
         None,
         description="The MAC address of the BMS device",
         examples=["d8:a9:ab:cd:12:34"],
     )
-    #: The parent device identifier
     parent: int | None = Field(
         None, description="The parent device identifier", examples=[11]
     )
-    #: The slave number of the BMS device
-    slave: int | None = Field(None, description="The slave number", examples=[230])
-    #: The parent device serial number
+    slave: int | None = Field(
+        None, description="The slave number of the BMS device", examples=[230]
+    )
     PARENT: str | None = Field(
         None,
         description="The parent device serial number",
@@ -769,29 +691,24 @@ class Battery(BaseDeviceDetail):
     if a Battery is connected to the PVS6 system.
     """
 
-    #: The type of interface used by the battery
     interface: str | None = Field(
         None,
         description="The type of interface used by the battery",
         examples=["none"],
     )
-    #: The parent device identifier
     parent: int | None = Field(
         None, description="The parent device identifier", examples=[11]
     )
-    #: The parent device serial number
     PARENT: str | None = Field(
         None,
         description="The parent device serial number",
         examples=["00001ABC1234_01234567890ABCDEF"],
     )
-    #: The hardware version of the battery
     hw_version: str | None = Field(
         None,
         description="The hardware version of the battery",
         examples=["4.34"],
     )
-    #: Description of the battery
     DESCR: str | None = Field(
         None,
         description="Description of the battery",
@@ -812,19 +729,16 @@ class EquinoxESS(BaseDeviceDetail):
     if an Equinox ESS is connected to the PVS6 system.
     """
 
-    #: The type of interface used by the ESS
     interface: str | None = Field(
         None,
         description="The type of interface used by the ESS",
         examples=["none"],
     )
-    #: The hardware version of the ESS
     hw_version: str | None = Field(
         None,
         description="The hardware version of the ESS",
         examples=["0"],
     )
-    #: Description of the ESS
     DESCR: str | None = Field(
         None,
         description="Description of the ESS",

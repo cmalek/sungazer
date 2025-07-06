@@ -22,13 +22,11 @@ class Interface(BaseModel):
     pairing: str | None = Field(None, examples=["unpaired"])
     #: The speed of the interface.
     speed: int | None = Field(None, examples=[5])
-    #: If the interface is primary, only shows for cell interface
     is_primary: bool | None = Field(
         None,
         description="this is the primary interface, only shows for cell interface",
         examples=[True],
     )
-    #: If the interface is always on, only shows for cell interface
     is_always_on: bool | None = Field(
         False,  # noqa: FBT003
         description="this interface is always on, only shows for cell interface",
@@ -109,13 +107,10 @@ class System(BaseModel):
     This is part of the ``Command=Get_Comm`` response in :py:class:`GetCommResponse`.
     """
 
-    #: The name of the device.
     interface: str | None = Field(
         None, description="the name of an interface", examples=["wan"]
     )
-    #: The status of the interface.
     internet: str | None = Field(None, description="internet status", examples=["up"])
-    #: The status of SMS connectivity
     sms: str | None = Field(None, description="sms status", examples=["reachable"])
 
 
@@ -124,7 +119,6 @@ class NetworkStatus(BaseModel):
     interfaces: list[Interface] | None = None
     #: The system information.
     system: System | None = None
-    #: The system timestamp.
     ts: str | None = Field(
         None, description="the system timestamp", examples=["1575501242"]
     )
