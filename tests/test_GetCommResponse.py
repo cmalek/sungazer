@@ -2,7 +2,8 @@
 import json
 from pathlib import Path
 
-import pytest  # noqa: F401
+import pytest
+from pydantic import ValidationError
 
 from sungazer.models.network import GetCommResponse, Interface, NetworkStatus, System
 
@@ -123,7 +124,7 @@ def test_get_comm_response_missing_required_fields():
 
     # Test missing networkstatus field
     data_without_networkstatus = {"result": "success"}
-    with pytest.raises(ValueError) as exc_info:  # noqa: PT011
+    with pytest.raises(ValidationError) as exc_info:  # noqa: PT011
         GetCommResponse(**data_without_networkstatus)  # type: ignore[arg-type]
     assert "networkstatus" in str(exc_info.value)
 

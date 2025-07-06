@@ -134,4 +134,4 @@ class GetCommResponse(BaseModel):
     """
 
     result: str = Field(..., examples=["success"])
-    networkstatus: NetworkStatus | None = None
+    networkstatus: NetworkStatus
