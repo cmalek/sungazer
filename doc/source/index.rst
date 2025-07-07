@@ -66,17 +66,17 @@ granted by:
 Why make this library?
 ----------------------
 
-When SunPower entered Chapter 11 bankruptcy in 2023, they sold their monitoring
-tools to SunStrong, once part of the SunPower group. The new company has changed
-the already poor SunPower monitoring iOS and Android application such that it
-hides most of the functionality behind a subscription paywall, and the
-application is now very limited.
+When SunPower entered Chapter 11 bankruptcy in 2024 (see
+:doc:`/overview/bankruptcy`), they sold their monitoring tools (among other
+other parts) to SunStrong Management. The new company has changed the already
+poor SunPower monitoring iOS and Android application such that it hides most of
+the functionality behind a subscription paywall, and the application is now very
+limited.
 
 Furthermore, the SunPower PVS6 API provides a ton of functionality that is not
 available in the SunPower monitoring application, and the API is not documented
 anywhere. This library provides a way to interact with the SunPower PVS6 API
 using Python, granting access to the data that is available in the API.
-
 
 Impact on Customers
 -------------------
@@ -102,6 +102,8 @@ answers support tickets -- calling them says to use the ticket system.
 Unfortunately, the ticket system requires a login, which is only available if
 you are leasing a SunPower system.  Thus you're out of luck if you bought a
 system outright or via third party financing.
+
+See :doc:`/overview/sunstrong` for more details.
 
 Current State of SunPower monitoring
 ------------------------------------

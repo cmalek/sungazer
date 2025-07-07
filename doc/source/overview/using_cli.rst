@@ -123,60 +123,61 @@ Example JSON output:
 
 .. code-block:: json
 
-{
-	"devices":	[{
-			"DETAIL":	"detail",
-			"STATE":	"working",
-			"STATEDESCR":	"Working",
-			"SERIAL":	"ZT21234123451234123",
-			"MODEL":	"PV Supervisor PVS6",
-			"HWVER":	"6.02",
-			"SWVER":	"2025.06, Build 61839",
-			"DEVICE_TYPE":	"PVS",
-			"DATATIME":	"2025,06,21,23,24,05",
-			"dl_err_count":	"0",
-			"dl_comm_err":	"2573",
-			"dl_skipped_scans":	"0",
-			"dl_scan_time":	"14",
-			"dl_untransmitted":	"0",
-			"dl_uptime":	"8003",
-			"dl_cpu_load":	"0.46",
-			"dl_mem_used":	"78348",
-			"dl_flash_avail":	"59052",
-			"panid":	590287501,
-			"CURTIME":	"2025,06,22,00,16,18"
-		}, {
-			"ISDETAIL":	true,
-			"SERIAL":	"PVS6M12341231p",
-			"TYPE":	"PVS5-METER-P",
-			"STATE":	"working",
-			"STATEDESCR":	"Working",
-			"MODEL":	"PVS6M0400p",
-			"DESCR":	"Power Meter PVS6M12341231p",
-			"DEVICE_TYPE":	"Power Meter",
-			"interface":	"mime",
-			"production_subtype_enum":	"GROSS_PRODUCTION_SITE",
-			"subtype":	"GROSS_PRODUCTION_SITE",
-			"SWVER":	"3000",
-			"PORT":	"",
-			"DATATIME":	"2025,06,22,00,16,18",
-			"ct_scl_fctr":	"50",
-			"net_ltea_3phsum_kwh":	"20733.1699",
-			"p_3phsum_kw":	"0.5154",
-			"q_3phsum_kvar":	"-0.0126",
-			"s_3phsum_kva":	"0.5209",
-			"tot_pf_rto":	"0.9962",
-			"freq_hz":	"60",
-			"i_a":	"2.1162",
-			"v12_v":	"246.1551",
-			"CAL0":	"50",
-			"origin":	"data_logger",
-			"OPERATION":	"noop",
-			"CURTIME":	"2025,06,22,00,16,19"
-		},
-        ...
-    ]
-}
+    {
+      "devices": [
+        {
+          "DETAIL": "detail",
+          "STATE": "working",
+          "STATEDESCR": "Working",
+          "SERIAL": "ZT21234123451234123",
+          "MODEL": "PV Supervisor PVS6",
+          "HWVER": "6.02",
+          "SWVER": "2025.06, Build 61839",
+          "DEVICE_TYPE": "PVS",
+          "DATATIME": "2025,06,21,23,24,05",
+          "dl_err_count": "0",
+          "dl_comm_err": "2573",
+          "dl_skipped_scans": "0",
+          "dl_scan_time": "14",
+          "dl_untransmitted": "0",
+          "dl_uptime": "8003",
+          "dl_cpu_load": "0.46",
+          "dl_mem_used": "78348",
+          "dl_flash_avail": "59052",
+          "panid": 590287501,
+          "CURTIME": "2025,06,22,00,16,18"
+        },
+        {
+          "ISDETAIL": true,
+          "SERIAL": "PVS6M12341231p",
+          "TYPE": "PVS5-METER-P",
+          "STATE": "working",
+          "STATEDESCR": "Working",
+          "MODEL": "PVS6M0400p",
+          "DESCR": "Power Meter PVS6M12341231p",
+          "DEVICE_TYPE": "Power Meter",
+          "interface": "mime",
+          "production_subtype_enum": "GROSS_PRODUCTION_SITE",
+          "subtype": "GROSS_PRODUCTION_SITE",
+          "SWVER": "3000",
+          "PORT": "",
+          "DATATIME": "2025,06,22,00,16,18",
+          "ct_scl_fctr": "50",
+          "net_ltea_3phsum_kwh": "20733.1699",
+          "p_3phsum_kw": "0.5154",
+          "q_3phsum_kvar": "-0.0126",
+          "s_3phsum_kva": "0.5209",
+          "tot_pf_rto": "0.9962",
+          "freq_hz": "60",
+          "i_a": "2.1162",
+          "v12_v": "246.1551",
+          "CAL0": "50",
+          "origin": "data_logger",
+          "OPERATION": "noop",
+          "CURTIME": "2025,06,22,00,16,19"
+        }
+      ]
+    }
 
 Device-Specific Commands
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -241,7 +242,6 @@ Example JSON output:
             "status": "connected",
             "sms": "reachable"
           }
-          ...
         ],
         "system": {
           "interface": "sta0",
