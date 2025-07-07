@@ -23,8 +23,9 @@ If you see this:
 .. image:: ../../images/oldpvs6-internal.jpg
    :alt: PVS6 device with dedicated Ethernet port
 
-- Has an RJ45 Ethernet port labeled "LAN1 (Installer)"
-- Has multiple USB ports for different purposes
+- Note that on the left, there is a port labeled "D-AUX", one labelled "RJ-485 2-wire", one labelled "LAN1 (Local Ethernet)" and one labeled "WAN (Customer Internet)"
+- The port we want to connect to is LAN1 (Local Ethernet)
+- There are also 4 USB ports, and one for power (labelled "12 VDC").
 
 You have an older PVS6 device with a dedicated Ethernet port.  You will just need to use a standard CAT5e or CAT6 Ethernet cable to connect to the device on LAN1.
 
@@ -33,8 +34,8 @@ If you see this:
 .. image:: ../../images/newpvs6-internal.jpg
    :alt: PVS6 device with USB ports
 
-- Only USB ports are visible
-- No dedicated Ethernet port for the installer
+- The D-AUX port and the RJ-485 2-wire port are still present, but the ethernet ports are not there.
+- There are now 3 USB ports, and one for power (labelled "12 VDC").
 
 You have a newer PVS6 device with only USB ports.  You will need to use a USB Ethernet adapter and a standard CAT5e or CAT6 Ethernet cable to connect to the device.
 
@@ -63,6 +64,7 @@ USB Ethernet Adapter (Newer Models)
 For PVS6 devices with only USB ports:
 
 **Required Equipment**
+
 - USB 2.0 to Ethernet adapter (compatible with PVS6).  The USB 3.0 tend not to work according to the community.
 - Standard Ethernet cable (Cat5e or Cat6)
 - Computer with Ethernet port or a USB Ethernet adapter
@@ -201,7 +203,6 @@ Connection Issues
 
 - Verify network configuration
 - Check firewall settings
-- Try different IP addresses (some devices use `192.168.0.1`)
 - Restart PVS6 device as above
 
 Getting Help

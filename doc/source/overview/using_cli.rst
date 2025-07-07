@@ -39,7 +39,7 @@ Common options available for all commands:
 .. code-block:: bash
 
     # Specify custom base URL
-    sungazer --base-url http://sunpowerconsole.com/cgi-bin session start
+    sungazer --base-url http://192.168.1.100/cgi-bin session start
 
     # Set custom timeout
     sungazer --timeout 60 device list
@@ -47,8 +47,8 @@ Common options available for all commands:
     # Choose output format
     sungazer --output table network list
 
-    # Use environment variables
-    export SUNGAZER_BASE_URL="http://sunpowerconsole.com/cgi-bin"
+    # Use environment variables to change configuration
+    export SUNGAZER_BASE_URL="http://192.168.1.100/cgi-bin"
     export SUNGAZER_TIMEOUT="30"
     sungazer session start
 
@@ -119,29 +119,64 @@ Listing All Devices
     # List in table format
     sungazer --output table device list
 
-    # List with custom device
-    sungazer --base-url http://sunpowerconsole.com/cgi-bin device list
-
-Example output:
+Example JSON output:
 
 .. code-block:: json
 
-    {
-      "devices": [
-        {
-          "type": "PVS6",
-          "model": "PVS6",
-          "serial": "ZT01234567890ABCDEF",
-          "status": "online"
-        },
-        {
-          "type": "INVERTER",
-          "model": "SPWR-5000",
-          "serial": "INV123456789",
-          "status": "online"
-        }
-      ]
-    }
+{
+	"devices":	[{
+			"DETAIL":	"detail",
+			"STATE":	"working",
+			"STATEDESCR":	"Working",
+			"SERIAL":	"ZT21234123451234123",
+			"MODEL":	"PV Supervisor PVS6",
+			"HWVER":	"6.02",
+			"SWVER":	"2025.06, Build 61839",
+			"DEVICE_TYPE":	"PVS",
+			"DATATIME":	"2025,06,21,23,24,05",
+			"dl_err_count":	"0",
+			"dl_comm_err":	"2573",
+			"dl_skipped_scans":	"0",
+			"dl_scan_time":	"14",
+			"dl_untransmitted":	"0",
+			"dl_uptime":	"8003",
+			"dl_cpu_load":	"0.46",
+			"dl_mem_used":	"78348",
+			"dl_flash_avail":	"59052",
+			"panid":	590287501,
+			"CURTIME":	"2025,06,22,00,16,18"
+		}, {
+			"ISDETAIL":	true,
+			"SERIAL":	"PVS6M12341231p",
+			"TYPE":	"PVS5-METER-P",
+			"STATE":	"working",
+			"STATEDESCR":	"Working",
+			"MODEL":	"PVS6M0400p",
+			"DESCR":	"Power Meter PVS6M12341231p",
+			"DEVICE_TYPE":	"Power Meter",
+			"interface":	"mime",
+			"production_subtype_enum":	"GROSS_PRODUCTION_SITE",
+			"subtype":	"GROSS_PRODUCTION_SITE",
+			"SWVER":	"3000",
+			"PORT":	"",
+			"DATATIME":	"2025,06,22,00,16,18",
+			"ct_scl_fctr":	"50",
+			"net_ltea_3phsum_kwh":	"20733.1699",
+			"p_3phsum_kw":	"0.5154",
+			"q_3phsum_kvar":	"-0.0126",
+			"s_3phsum_kva":	"0.5209",
+			"tot_pf_rto":	"0.9962",
+			"freq_hz":	"60",
+			"i_a":	"2.1162",
+			"v12_v":	"246.1551",
+			"CAL0":	"50",
+			"origin":	"data_logger",
+			"OPERATION":	"noop",
+			"CURTIME":	"2025,06,22,00,16,19"
+		},
+        ...
+    ]
+}
 
 Device-Specific Commands
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -181,10 +216,7 @@ Network Status
     # Get network status in table format
     sungazer --output table network list
 
-    # Get network status for specific device
-    sungazer --base-url http://sunpowerconsole.com/cgi-bin network list
-
-Example output:
+Example JSON output:
 
 .. code-block:: json
 
@@ -209,6 +241,7 @@ Example output:
             "status": "connected",
             "sms": "reachable"
           }
+          ...
         ],
         "system": {
           "interface": "sta0",
@@ -248,6 +281,10 @@ Grid Profile Management
 
 Grid profile commands manage grid profile settings.
 
+A grid profile is a collection of utility-approved operating parameters for a
+system. Selecting the appropriate grid profile ensures compliance and
+interoperability with the local electric utility.
+
 Get Current Profile
 ~~~~~~~~~~~~~~~~~~~
 
@@ -276,6 +313,11 @@ Example output:
 
 Refresh Grid Profile
 ~~~~~~~~~~~~~~~~~~~~
+
+.. important::
+
+    I suspect that this causes internal state of the PVS6 to be updated, so use
+    this with caution.
 
 .. code-block:: bash
 
@@ -313,43 +355,8 @@ Table Format
 Configuration
 -------------
 
-Configuration File
-~~~~~~~~~~~~~~~~~~
-
-Create a configuration file at ``~/.sungazer.conf``:
-
-.. code-block:: ini
-
-    [sungazer]
-    base_url = http://sunpowerconsole.com/cgi-bin
-    timeout = 30
-    serial = ZT01234567890ABCDEF
-
-Environment Variables
-~~~~~~~~~~~~~~~~~~~~~
-
-Set environment variables for configuration:
-
-.. code-block:: bash
-
-    # Set base URL
-    export SUNGAZER_BASE_URL="http://sunpowerconsole.com/cgi-bin"
-
-    # Set timeout
-    export SUNGAZER_TIMEOUT="30"
-
-    # Use in commands
-    sungazer session start
-
-Configuration Priority
-~~~~~~~~~~~~~~~~~~~~~~
-
-Configuration is loaded in this order:
-
-1. Command-line options (highest priority)
-2. Environment variables
-3. Configuration file
-4. Default values (lowest priority)
+See :doc:`/overview/configuration` for details on how to configure ``sungazer``
+for your specific PVS6 monitoring use case.
 
 Examples
 --------
@@ -384,9 +391,8 @@ Advanced Usage Examples
     sungazer --output table firmware check
     sungazer session stop
 
-    # Use with custom device
-    sungazer --base-url http://sunpowerconsole.com/cgi-bin \
-             --timeout 60 \
+    # Use with custom hostname or IP address
+    sungazer --base-url http://192.168.1.100/cgi-bin \
              --output table \
              session start
 
@@ -440,7 +446,7 @@ Common Error Scenarios
         # Error: Failed to connect to http://sunpowerconsole.com/cgi-bin
 
         # Solution: Check device IP and connectivity
-        ping 192.168.1.100
+        telnet sunpowerconsole.com 443
 
 **Session Errors**
     .. code-block:: bash
@@ -468,7 +474,7 @@ Common Error Scenarios
         sungazer session start
 
         # Solution: The library automatically handles SSL issues
-        # If problems persist, check device SSL configuration
+        # If problems persist, open an issue on the GitHub repository
 
 Troubleshooting
 ---------------
@@ -478,11 +484,11 @@ Debugging Commands
 
 .. code-block:: bash
 
-    # Test basic connectivity
-    curl -v http://sunpowerconsole.com/cgi-bin/dl_cgi
-
     # Check if device is reachable
     telnet sunpowerconsole.com 443
+
+    # Test basic connectivity
+    curl --no-check-certificate -v http://sunpowerconsole.com/cgi-bin/dl_cgi?Command=Start
 
     # Test with verbose output
     sungazer --output table session start
@@ -491,19 +497,18 @@ Common Issues
 ~~~~~~~~~~~~~
 
 **Device Not Found**
-    - Verify the IP address is correct
-    - Check that the device is powered on
-    - Ensure network connectivity
+    - Verify the IP address or hostname of the PVS6 is correct
+    - Check that the PVS6 is powered on
+    - Check network connectivity
 
-**Session Failures**
-    - Try restarting the PVS6 device
-    - Check device serial number
-    - Verify network connectivity
+**Connection Refused or 403 Forbidden**
+    - Check network connectivity
+    - Try restarting the PVS6 device by disabling the breaker for it and then
+      re-enabling it again.  The community has said that this works.
 
 **Slow Response**
     - Increase timeout value
     - Check network performance
-    - Consider using a wired connection
 
 **Permission Errors**
     - Check file permissions for configuration files
@@ -531,17 +536,7 @@ Choose appropriate output formats:
 Configuration Management
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use configuration files when necessary:
-
-.. code-block:: bash
-
-    # Create configuration file
-    cat > ~/.sungazer.conf << EOF
-    [sungazer]
-    base_url = http://sunpowerconsole.com/cgi-bin
-    timeout = 30
-    serial = ZT01234567890ABCDEF
-    EOF
-
-    # Use configuration
-    sungazer session start
+Use configuration files when necessary.  The default configuration shipped
+with ``sungazer`` is is typically fine if you are connecting directly to the
+PVS6 itself, but you can override it with a configuration file.  See
+:doc:`/overview/configuration` for more details.

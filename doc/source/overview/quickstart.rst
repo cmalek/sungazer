@@ -7,41 +7,46 @@ the Python client and command-line interface.
 Prerequisites
 -------------
 
-- A SunPower PVS6 device on your network
-- Python 3.10+ with ``sungazer`` installed
+- A SunPower PVS6 device
+- Follow the :doc:`/overview/installation` instructions to install ``sungazer``
 - Network access to your PVS6 device (see :doc:`/overview/connecting`)
 
 Basic Usage with Python Client
 ------------------------------
 
-The ``SungazerClient`` provides a simple interface to interact with your PVS6 device.
+The :py:class:`sungazer.client.SungazerClient` provides a simple interface to
+interact with your PVS6 device.  You can find the full API reference in the
+:doc:`/api/client` section.
 
-Starting a Session
-~~~~~~~~~~~~~~~~~~
+Getting info about the PVS6 device itself
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First, create a client and start a session:
+.. note::
+
+    ``client.session.start()`` will start a session with the PVS6 device.  This
+    seems to be only required to **write** to the PVS6 device, but we don't know
+    of any of the endpoints that require a session, so we just use it to get info
+    about the PVS6 device itself.
 
 .. code-block:: python
 
     from sungazer import SungazerClient
 
-    # Create client (replace with your device's IP address)
-    client = SungazerClient(
-        base_url="http://sunpowerconsole.com/cgi-bin",  # Your PVS6 IP
-        timeout=30,
-        serial="ZT01234567890ABCDEF"  # Your device serial
-    )
+    # Create client with the default configuration
+    client = SungazerClient()
 
-    # Start a session
+    # Run the session start command to see info about the PVS6 device
     session_info = client.session.start()
-    print(f"Session started: {session_info.result}")
     print(f"Device: {session_info.supervisor.MODEL}")
     print(f"Serial: {session_info.supervisor.SERIAL}")
+
+    client.session.stop()
 
 Getting Device Information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-List all devices connected to your system:
+List all devices connected to your system.  Note that you don't need to start a
+session to do this.
 
 .. code-block:: python
 
@@ -84,17 +89,6 @@ Check if firmware updates are available:
     if firmware.url and firmware.url != "none":
         print(f"Update available: {firmware.url}")
 
-Stopping the Session
-~~~~~~~~~~~~~~~~~~~~
-
-Always close your session when done:
-
-.. code-block:: python
-
-    # Stop the session
-    stop_result = client.session.stop()
-    print(f"Session stopped: {stop_result.result}")
-
 Using Context Manager
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -102,10 +96,7 @@ For automatic session management, use the context manager:
 
 .. code-block:: python
 
-    with SungazerClient(
-        base_url="http://sunpowerconsole.com/cgi-bin",
-        serial="ZT01234567890ABCDEF"
-    ) as client:
+    with SungazerClient() as client:
         # Session is automatically started
         devices = client.device.list()
         print(f"Found {len(devices.devices)} devices")
@@ -128,6 +119,8 @@ Getting Help
     sungazer session --help
     sungazer device --help
     sungazer network --help
+    sungazer firmware --help
+    sungazer grid-profile --help
 
 Starting a Session
 ~~~~~~~~~~~~~~~~~~
@@ -137,7 +130,8 @@ Starting a Session
     # Start a session with default settings
     sungazer session start
 
-    # Start with custom device
+    # Start with custom IP (if you've bridged the PVS6 to your local network for
+    # example)
     sungazer --base-url http://192.168.1.100/cgi-bin session start
 
 Listing Devices
@@ -168,51 +162,37 @@ Checking Firmware
 .. code-block:: bash
 
     # Check firmware status
-    sungazer firmware check
+    >>> sungazer firmware check
+    {
+        "url": "none"
+    }
 
 Configuration
 -------------
 
-You can configure ``sungazer`` using configuration files or environment variables.
+If you are connecting your computer directly to the PVS6, typically the defaults
+that ship with ``sungazer`` will work.  If you need to change those defaults,
+you can create a configuration file at ``~/.sungazer.conf``:
 
-Configuration File
-~~~~~~~~~~~~~~~~~~
-
-Create a configuration file at ``~/.sungazer.conf``:
-
-.. code-block:: ini
-
-    [sungazer]
-    base_url = http://sunpowerconsole.com/cgi-bin
-    timeout = 30
-    serial = ZT01234567890ABCDEF
-
-Environment Variables
-~~~~~~~~~~~~~~~~~~~~~
-
-Set environment variables:
-
-.. code-block:: bash
-
-    export SUNGAZER_BASE_URL="http://sunpowerconsole.com/cgi-bin"
-    export SUNGAZER_TIMEOUT="30"
-    sungazer session start
+You can configure ``sungazer`` using configuration files or environment
+variables.  See :doc:`/overview/configuration` for more details.
 
 Next Steps
 ----------
 
 Now that you have the basics working:
 
-1. **Explore Device Data**: Use ``sungazer device pvs``, ``sungazer device inverters``,
+1. **Usage**: See :doc:`/overview/using_client` and :doc:`/overview/using_cli` for more advanced features.
+
+2. **Explore Device Data**: Use ``sungazer device pvs``, ``sungazer device inverters``,
    and other device-specific commands to explore your system data.
 
-2. **Monitor Network**: Use ``sungazer network list`` to monitor connectivity.
+3. **Monitor Network**: Use ``sungazer network list`` to monitor connectivity.
 
-3. **Check for Updates**: Regularly run ``sungazer firmware check`` to stay updated.
+4. **Check for Updates**: Regularly run ``sungazer firmware check`` to see if you need to update your PVS6 firmware.
 
-4. **Automate**: Use the Python client in scripts to automate monitoring and data collection.
+5. **Automate**: Use the Python client in scripts to automate monitoring and data collection.
 
-5. **Advanced Usage**: See :doc:`/overview/using_client` and :doc:`/overview/using_cli` for more advanced features.
 
 
 Troubleshooting

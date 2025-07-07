@@ -8,21 +8,33 @@ Prerequisites
 
 Before installing ``sungazer``, ensure you have:
 
-- Python 3.8 or higher
-- pip (Python package installer)
-- Access to a SunPower PVS6 device on your network
+- Python 3.10 or higher
+- `uv <https://docs.astral.sh/uv/>`_ or `pip <https://pip.pypa.io/en/stable/>`_
+- Access to a SunPower PVS6 device and a way to connect to it (see :doc:`/overview/connecting`)
 
 Installation Methods
 --------------------
 
-From PyPI (Recommended)
-~~~~~~~~~~~~~~~~~~~~~~~
-
-The easiest way to install ``sungazer`` is using pip:
+From PyPI with ``pip``
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
+    python -m venv .venv
+    source .venv/bin/activate
     pip install sungazer
+
+From PyPI with ``uv``
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    sh -c "$(curl -fsSL https://astral.sh/uv/install)"
+    uv tool install sungazer
+    # Ensure you have ./local/bin in your PATH, since that's where uv puts the
+    # executable
+    sungazer --help
+
 
 From Source
 ~~~~~~~~~~~
@@ -31,18 +43,10 @@ If you want to install from the latest development version:
 
 .. code-block:: bash
 
-    git clone https://github.com/your-repo/sungazer.git
+    git clone https://github.com/cmalek/sungazer.git
+    sh -c "$(curl -fsSL https://astral.sh/uv/install)"
     cd sungazer
-    pip install -e .
-
-Using uv (Fast Python Package Installer)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you prefer using `uv <https://github.com/astral-sh/uv>`_ for faster package management:
-
-.. code-block:: bash
-
-    uv add sungazer
+    uv tool install .
 
 Verification
 ------------
@@ -51,6 +55,7 @@ After installation, verify that ``sungazer`` is properly installed:
 
 .. code-block:: python
 
+    source .venv/bin/activate
     python -c "import sungazer; print(sungazer.__version__)"
 
 You should also be able to run the CLI:
@@ -76,11 +81,14 @@ Development Installation
 
 If you plan to contribute to ``sungazer`` or need the latest development features:
 
+
+
 .. code-block:: bash
 
+    sh -c "$(curl -fsSL https://astral.sh/uv/install)"
     git clone https://github.com/your-repo/sungazer.git
     cd sungazer
-    pip install -e ".[dev]"
+    uv sync --dev
 
 This installs additional development dependencies including:
 
@@ -94,27 +102,6 @@ Configuration
 
 After installation, you may want to configure ``sungazer`` for your specific PVS6 device.
 See :doc:`configuration` for detailed configuration options.
-
-Troubleshooting
----------------
-
-Common Installation Issues
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Permission Errors**
-    If you encounter permission errors during installation, try:
-
-    .. code-block:: bash
-
-        pip install --user sungazer
-
-**SSL Certificate Issues**
-    If you have SSL certificate issues with your PVS6 device, the library is
-    configured to handle this automatically by disabling SSL verification.
-
-**Network Connectivity**
-    Ensure your PVS6 device is accessible on your network and the API endpoint
-    is reachable from your machine.
 
 Getting Help
 ------------

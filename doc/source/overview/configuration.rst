@@ -438,28 +438,32 @@ Configuration Management
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Use configuration files for defaults**
+
    - Set common settings in ``~/.sungazer.conf``
    - Use environment variables for overrides
    - Use command-line options for one-time changes
 
 2. **Separate environments**
+
    - Use different config files for different environments
    - Use environment variables for sensitive data
    - Document configuration requirements
 
 3. **Version control**
+
    - Don't commit sensitive configuration
    - Use templates for configuration files
    - Document configuration changes
 
 4. **Security**
+
    - Protect configuration files with proper permissions
    - Use HTTPS when available
    - Clear sensitive environment variables
 
 5. **Testing**
-   - Test configuration with different devices
-   - Validate network connectivity
+
+   - Run the tests with ``pytest``
    - Test timeout settings
 
 Configuration Templates

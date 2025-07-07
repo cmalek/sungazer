@@ -4,8 +4,8 @@ SunStrong Management and you
 ============================
 
 - **Apr 15, 2025**: SunStrong transitioned the the small number of customers using cellular connections to WiFi connectivity.  It was told to customers via email.
-- **Apr 21, 2025**: First apperance of the "SunStrong Connect" application in the Android Play Store. The app featured a new OTA (over-the-air) upgrade feature, which lets installers — and in some cases even end-customers — remotely push firmware updates (e.g. for PVS6 inverters, Hub+, AC modules) directly from their smartphone, without having to physically connect to each device on-site.
-- **Apr 22, 2025**: The iOS mySunPower app was rebranded to SunStrong Connect, as v1.0.98 the same build number as the Android app.
+- **Apr 21, 2025**: First apperance of the "SunStrong Connect" application in the Android Play Store as v1.0.97. The app featured a new OTA (over-the-air) upgrade feature, which lets installers — and in some cases even end-customers — remotely push firmware updates (e.g. for PVS6 inverters, Hub+, AC modules) directly from their smartphone, without having to physically connect to each device on-site.
+- **Apr 22, 2025**: The iOS mySunPower app was rebranded to SunStrong Connect, as v1.0.98.  The Android app was released with this same build number on this date.
 - **May 2025**: Field reports (e.g., installers on Home-Assistant forums) noted PVS6 units receiving firmware 2025.04 (build 61829), which addressed the flash‐wear “memory exhaustion” bug (a very good thing) and enabled smoother connectivity via the SunStrong Connect app.
 - **mid-Jun 2025**: PVS6 firmware 2025.06 (build 61839) was released.  This is the current firmware as of Jul 2025.
 

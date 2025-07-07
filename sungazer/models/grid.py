@@ -135,7 +135,7 @@ class GridProfileGetResponse(BaseModel):
     pending_id: str | None = Field(
         None, examples=["816bf3302d337a42680b996227ddbc46abf9cd05"]
     )
-    #: The completion percentage of the grid profile operation.
+    #: Not sure what this is, but it's always 100% for me
     percent: int | None = Field(None, examples=[100])
     #: Indicates which components support the grid profile.
     supported_by: str | None = Field(None, examples=["ALL"])

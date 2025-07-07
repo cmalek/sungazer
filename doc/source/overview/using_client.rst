@@ -232,24 +232,30 @@ Check and manage firmware updates.
 Firmware Status
 ~~~~~~~~~~~~~~~
 
+.. note::
+
+    Even though the PVS6 API has an endpoint to check for firmware updates, I'm
+    not sure now with the new OTA (over-the-air) firmware updates in firmwares
+    2025.05 and later that SunStrong has pushed out that this is still useful.
+
 .. code-block:: python
 
     # Check firmware status
     firmware = client.firmware.check()
 
-    print(f"Firmware check result: {firmware.result}")
-    print(f"Current version: {firmware.version}")
-
-    if firmware.url and firmware.url != "none":
+    if firmware.url and firmware.url is not None:
         print(f"Update available: {firmware.url}")
-        print(f"Update size: {firmware.size}")
     else:
         print("No firmware update available")
 
 Grid Profile Management
 -----------------------
 
-Manage grid profile settings for your solar system.
+Manage or view the grid profile settings for your solar system.
+
+A grid profile is a collection of utility-approved operating parameters for a
+system. Selecting the appropriate grid profile ensures compliance and
+interoperability with the local electric utility.
 
 Get Current Profile
 ~~~~~~~~~~~~~~~~~~~
@@ -264,12 +270,17 @@ Get Current Profile
     print(f"Active ID: {profile.active_id}")
     print(f"Pending profile: {profile.pending_name}")
     print(f"Pending ID: {profile.pending_id}")
-    print(f"Progress: {profile.percent}%")
+    print(f"Support: {profile.percent}%")
     print(f"Supported by: {profile.supported_by}")
     print(f"Status: {profile.status}")
 
 Refresh Grid Profile
 ~~~~~~~~~~~~~~~~~~~~
+
+.. important::
+
+    I suspect that this causes internal state of the PVS6 to be updated, so use
+    this with caution.
 
 .. code-block:: python
 
@@ -350,7 +361,7 @@ Always close clients when done:
 
 .. code-block:: python
 
-    client = SungazerClient(base_url="http://sunpowerconsole.com/cgi-bin")
+    client = SungazerClient()
     try:
         # Use the client
         devices = client.device.list()
@@ -368,7 +379,7 @@ The client reuses HTTP connections for efficiency:
 .. code-block:: python
 
     # Multiple operations use the same connection
-    with SungazerClient(base_url="http://sunpowerconsole.com/cgi-bin") as client:
+    with SungazerClient() as client:
         session = client.session.start()
         devices = client.device.list()
         network = client.network.list()

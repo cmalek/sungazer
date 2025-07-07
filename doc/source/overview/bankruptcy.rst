@@ -61,7 +61,6 @@ References
 
 - `SunPower Acquisition Announcement & FAQs <https://us.sunpower.com/acquisition-announcement>`_
 - `Bloomberg Law: Solar Panel Bankruptcies Leave Frustrated Homeowners in Limbo <https://news.bloomberglaw.com/bankruptcy-law/solar-panel-bankruptcies-leave-frustrated-homeowners-in-limbo>`_
-- `SunStrong Bankruptcy <https://www.sunstrong.com/about-us/news/sunstrong-bankruptcy>`_
 - `What SunPower Customers Need to Know About Bankruptcy <https://www.solarreviews.com/blog/what-sunpower-customers-need-to-know-about-bankruptcy>`_
 - `Case 24-11649-CTG in the District of Delaware <https://document.epiq11.com/document/getdocumentsbydocket/?docketId=1160575&projectCode=SPX&docketNumber=1544&source=DM>`_
 - `Case 24-11117-CTG in the District of Delaware <https://document.epiq11.com/document/getdocumentsbydocket/?docketId=1111745&projectCode=SPX&docketNumber=443&source=DM>`_

@@ -8,11 +8,11 @@ maintainers = [
     {name = "Christopher Malek", email = "cmalek@placodermi.org"},
 ]
 requires-python = ">= 3.10"
-description = "Reads data from a SunPower PVS6 device and visualizes it in a web browser."
+description = "An API client that reads data from the internal network of a SunPower PVS6 monitoring device."
 readme = "README.md"
 keywords = ["aws"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Framework :: Pydantic",
