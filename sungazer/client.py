@@ -261,19 +261,25 @@ class SungazerClient:
         base_url: str = "http://sunpowerconsole.com/cgi-bin",
         timeout: int = 30,
         serial: str | None = None,
+        client: httpx.Client | None = None,
     ):
         """
         Initialize the Sungazer client.
 
-        Args:
+        Keyword Args:
             base_url: The base URL for the API
             timeout: Request timeout in seconds
             serial: The serial number of the PVS6 device
+            client: An optional httpx client to use for requests
 
         """
         self.base_url = base_url
         self.serial = serial
-        self.client = httpx.Client(base_url=base_url, timeout=timeout, verify=False)  # noqa: S501
+        self.client = client or httpx.Client(
+            base_url=base_url,
+            timeout=timeout,
+            verify=False,  # noqa: S501
+        )
 
         # Initialize specialized clients
         self.session = SessionClient(self.client, serial=serial)
