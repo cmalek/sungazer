@@ -5,7 +5,7 @@ import traceback
 from datetime import datetime
 from ipaddress import IPv4Address
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Callable
 
 import click
 from rich.console import Console
@@ -25,7 +25,7 @@ class OddTypeEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-def load_config() -> Dict[str, Any]:
+def load_config() -> dict[str, Any]:
     """
     Load configuration from file.
 
@@ -67,7 +67,7 @@ def load_config() -> Dict[str, Any]:
     return result
 
 
-def read_json_file(file_path: str) -> Dict[str, Any]:
+def read_json_file(file_path: str) -> dict[str, Any]:
     """
     Read JSON from a file.
 
@@ -139,7 +139,7 @@ def output_formatter(data: Any, output_format: str):  # noqa: PLR0912
             console.print(str(data))
 
 
-def handle_exceptions(func):
+def handle_exceptions(func: Callable):
     """Decorator to handle exceptions consistently across commands."""
 
     def wrapper(*args, **kwargs):
