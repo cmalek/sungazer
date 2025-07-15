@@ -1,7 +1,7 @@
-Configuration
-=============
+Configuration: Command Line Tool
+================================
 
-This guide covers all configuration options for the ``sungazer`` library, including
+This guide covers all configuration options for the ``sungazer`` command line tool, including
 configuration files, environment variables, and command-line options.
 
 In general the default values should work for most people if you are connecting
@@ -15,7 +15,8 @@ to that proxy from your home network.
 Configuration Methods
 ---------------------
 
-``sungazer`` supports multiple configuration methods, loaded in order of priority:
+The ``sungazer`` command line tool supports multiple configuration methods,
+loaded in order of priority:
 
 1. **Command-line options** (highest priority)
 2. **Environment variables**
@@ -65,6 +66,7 @@ Configuration Options
     Default: ``30``
 
     Example:
+
     .. code-block:: ini
 
         timeout = 60
@@ -75,6 +77,7 @@ Configuration Options
     Default: ``None``
 
     Example:
+
     .. code-block:: ini
 
         serial = ZT01234567890ABCDEF
@@ -128,6 +131,7 @@ Option Reference
     Override the base URL for API requests.
 
     Example:
+
     .. code-block:: bash
 
         sungazer --base-url https://sunpowerconsole.com/cgi-bin session start
@@ -136,6 +140,7 @@ Option Reference
     Set request timeout in seconds.
 
     Example:
+
     .. code-block:: bash
 
         sungazer --timeout 120 device list
@@ -149,46 +154,6 @@ Option Reference
     .. code-block:: bash
 
         sungazer --output table device list
-
-Python Client Configuration
----------------------------
-
-Direct Configuration
-~~~~~~~~~~~~~~~~~~~~
-
-Configure the client directly in Python:
-
-.. code-block:: python
-
-    from sungazer import SungazerClient
-
-    # Basic configuration
-    client = SungazerClient(
-        base_url="http://sunpowerconsole.com/cgi-bin",
-        timeout=30,
-        serial="ZT01234567890ABCDEF"
-    )
-
-Advanced Configuration
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: python
-
-    import httpx
-    from sungazer import SungazerClient
-
-    # Create custom HTTP client
-    http_client = httpx.Client(
-        timeout=httpx.Timeout(60.0),
-        headers={"User-Agent": "Sungazer/1.0"},
-        verify=False  # Disable SSL verification
-    )
-
-    # Use custom client
-    client = SungazerClient(
-        base_url="http://sunpowerconsole.com/cgi-bin",
-        client=http_client
-    )
 
 Configuration Examples
 ----------------------
@@ -302,31 +267,6 @@ For slow or unreliable networks:
     timeout = 120
     serial = ZT01234567890ABCDEF
 
-SSL Configuration
------------------
-
-SSL Certificate Handling
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-The library automatically handles SSL certificate issues by disabling verification.
-For custom SSL configuration:
-
-.. code-block:: python
-
-    import httpx
-    from sungazer import SungazerClient
-
-    # Custom SSL configuration
-    http_client = httpx.Client(
-        verify=False,  # Disable SSL verification
-        timeout=httpx.Timeout(30.0)
-    )
-
-    client = SungazerClient(
-        base_url="https://sunpowerconsole.com/cgi-bin",
-        client=http_client
-    )
-
 Security Considerations
 -----------------------
 
@@ -341,7 +281,7 @@ Protect your configuration files:
     chmod 600 ~/.sungazer.conf
 
     # For system-wide configuration
-    chmod 644 /etc/sungazer.conf
+    chmod 640 /etc/sungazer.conf
     chown root:root /etc/sungazer.conf
 
 Environment Variable Security
@@ -392,6 +332,9 @@ Common Issues
     - Verify file format (INI syntax)
     - Ensure file is in correct location
 
+**Configuration Not Valid**
+    - See :ref:`Configuration Validation CLI` for more details.
+
 **Environment Variables Not Recognized**
     - Check variable names (must start with ``SUNGAZER_``)
     - Restart terminal session
@@ -402,6 +345,8 @@ Common Issues
     - Check for conflicting options
     - Use ``--help`` to see current options
 
+
+.. _Configuration Validation CLI:
 
 Configuration Validation
 ------------------------
@@ -463,7 +408,6 @@ Configuration Management
 
 5. **Testing**
 
-   - Run the tests with ``pytest``
    - Test timeout settings
 
 Configuration Templates

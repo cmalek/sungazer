@@ -10,13 +10,16 @@ Prerequisites
 - A SunPower PVS6 device
 - Follow the :doc:`/overview/installation` instructions to install ``sungazer``
 - Network access to your PVS6 device (see :doc:`/overview/connecting`)
+- A CAT5e or CAT6 Ethernet cable to connect your PVS6 device to your computer
+- Possibly a USB-A to Ethernet adapter if your PVS6 device doesn't have a LAN1 Ethernet port (see :doc:`/overview/connecting`)
 
 Basic Usage with Python Client
 ------------------------------
 
 The :py:class:`sungazer.client.SungazerClient` provides a simple interface to
 interact with your PVS6 device.  You can find the full API reference in the
-:doc:`/api/client` section.
+:doc:`/api/client` section.  See :doc:`/overview/configuration_client` for
+configuration options for the Python client.
 
 Getting info about the PVS6 device itself
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -167,15 +170,15 @@ Checking Firmware
         "url": "none"
     }
 
-Configuration
--------------
+Configuration for the Command Line Tool
+---------------------------------------
 
 If you are connecting your computer directly to the PVS6, typically the defaults
 that ship with ``sungazer`` will work.  If you need to change those defaults,
 you can create a configuration file at ``~/.sungazer.conf``:
 
 You can configure ``sungazer`` using configuration files or environment
-variables.  See :doc:`/overview/configuration` for more details.
+variables.  See :doc:`/overview/configuration_cli` for more details.
 
 Next Steps
 ----------

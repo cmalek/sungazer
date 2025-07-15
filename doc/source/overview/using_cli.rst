@@ -355,7 +355,7 @@ Table Format
 Configuration
 -------------
 
-See :doc:`/overview/configuration` for details on how to configure ``sungazer``
+See :doc:`/overview/configuration_cli` for details on how to configure ``sungazer``
 for your specific PVS6 monitoring use case.
 
 Examples
@@ -539,4 +539,4 @@ Configuration Management
 Use configuration files when necessary.  The default configuration shipped
 with ``sungazer`` is is typically fine if you are connecting directly to the
 PVS6 itself, but you can override it with a configuration file.  See
-:doc:`/overview/configuration` for more details.
+:doc:`/overview/configuration_cli` for more details.

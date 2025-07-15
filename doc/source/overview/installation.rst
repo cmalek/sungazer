@@ -100,8 +100,9 @@ This installs additional development dependencies including:
 Configuration
 -------------
 
-After installation, you may want to configure ``sungazer`` for your specific PVS6 device.
-See :doc:`configuration` for detailed configuration options.
+After installation, you may want to configure ``sungazer`` for your specific
+PVS6 device.  See :doc:`configuration_cli`  and :doc:`configuration_client` for
+detailed configuration options.
 
 Getting Help
 ------------

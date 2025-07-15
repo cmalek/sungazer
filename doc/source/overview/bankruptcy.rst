@@ -17,7 +17,7 @@ Bankruptcy Timeline
 	-	Blue Raven Solar division (SunPower’s residential solar installation and financing arm)
 	-	New Homes division (pre-wired solar solutions for home builders)
 	-	Non-Installing Dealer network (third-party dealer channel)
-	-	“SunPower” brand and related trademarks & intellectual property.  Complete Solaria is now the owner of the SunPower brand, and has renamed itself to SunPower.
+	-	“SunPower” brand and related trademarks & intellectual property.  Complete Solaria is now the owner of the SunPower brand, and has `renamed itself to SunPower <https://www.renewableenergyworld.com/solar/residential/roll-away-the-stone-sunpower-rises-from-the-dead/>`_.
 
 - **Sep 30, 2024**: HA SunStrong Capital LLC (aka SunStrong Management) acquired the following assets from SunPower:
 
@@ -34,14 +34,18 @@ Who was involved in the SunPower bankruptcy?
 --------------------------------------------
 
 The Debtors in these chapter 11 cases, along with the last four digits of each
-Debtor's federal tax identification number, are: SunPower Corporation (8969);
-SunPower Corporation, Systems (8962); SunPower Capital, LLC (8450); SunPower
-Capital Services, LLC (9910); SunPower HoldCo, LLC (0454); SunPower North
-America, LLC (0194); Blue Raven Solar, LLC (3692); Blue Raven Solar Holdings,
-LLC (4577); BRS Field Ops, LLC (2370); and Falcon Acquisition HoldCo, Inc.
-(3335). The location of the Debtors' service address for purposes of these
-chapter 11 cases is: 880 Harbour Way South, Suite 600, Richmond, CA 94804.
+Debtor's federal tax identification number, are:
 
+- SunPower Corporation (8969);
+- SunPower Corporation, Systems (8962);
+- SunPower Capital, LLC (8450);
+- SunPower Capital Services, LLC (9910);
+- SunPower HoldCo, LLC (0454);
+- SunPower North America, LLC (0194);
+- Blue Raven Solar, LLC (3692);
+- Blue Raven Solar Holdings, LLC (4577);
+- BRS Field Ops, LLC (2370);
+- and Falcon Acquisition HoldCo, Inc. (3335).
 
 Summary
 -------

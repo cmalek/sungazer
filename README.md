@@ -2,12 +2,13 @@
 
 **Documentation**: https://sungazer.readthedocs.org
 
-`sungazer` is a web based interface to the monitoring data output by the SunPower PVS6
-monitoring device installed with a SunPower solar insallation.
+`sungazer` is a command line interface and client library for accessing the the
+internal API of the SunPower PVS6 monitoring device installed with a SunPower
+solar insallation.
 
 ## Installation
 
-`sungazer` supports Python 3.9+.
+`sungazer` supports Python 3.10+.
 
 To install from PyPI:
 
@@ -23,13 +24,13 @@ Example usage of the command line interface:
 # Get help
 sungazer --help
 sungazer device --help
-sungazer network get-power-production --help
+sungazer network list --help
 
 # Use JSON output (default)
-sungazer status get-ess
+sungazer session start
 
 # Use table output
-sungazer status get-ess --output table
+sungazer session start --output table
 ```
 
 ## Autocomplete

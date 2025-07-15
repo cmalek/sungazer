@@ -16,8 +16,9 @@ sungazer
    :hidden:
 
    overview/connecting
-   overview/configuration
+   overview/configuration_client
    overview/using_client
+   overview/configuration_cli
    overview/using_cli
 
 .. toctree::
@@ -45,9 +46,10 @@ SunPower PVS6 API.
 Legal
 -----
 
-This library is not affiliated with SunPower Corporation or SunStrong.  It is
-a community-driven project that provides a way to interact with the SunPower
-PVS6 API using Python.
+This library is not affiliated with SunPower Corporation or SunStrong
+Management, Ha Sunstrong Capital LLC, SunStrong Partners, LLC or SunStrong
+Capital Holdings, LLC.  It is a community-driven project that provides a way to
+interact with the SunPower PVS6 API using Python.
 
 This documentation and software is published solely for the purpose of enabling
 interoperability with independently developed monitoring tools, systems, or
