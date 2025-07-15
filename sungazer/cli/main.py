@@ -169,13 +169,18 @@ def handle_exceptions(func):
     envvar="SUNGAZER_TIMEOUT",
 )
 @click.option(
+    "--serial",
+    help="Serial number of the PVS6 device",
+    envvar="SUNGAZER_SERIAL",
+)
+@click.option(
     "--output",
     type=click.Choice(["json", "table"]),
     default="json",
     help="Output format",
 )
 @click.pass_context
-def cli(ctx, base_url, timeout, output):
+def cli(ctx, base_url: str, timeout: int, serial: str, output: str):
     """Sungazer CLI - Command line interface for Sungazer PVS6 API."""
     # Load config from file
     config = load_config()
@@ -185,6 +190,8 @@ def cli(ctx, base_url, timeout, output):
         config["base_url"] = base_url
     if timeout:
         config["timeout"] = timeout
+    if serial:
+        config["serial"] = serial
 
     # Create client
     client = SungazerClient(
